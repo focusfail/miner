@@ -1,7 +1,11 @@
 #include "World/Chunk/ChunkManager.hh"
 
+#include <spdlog/spdlog.h>
+
 auto ChunkManager::CreateChunk(const ChunkPosition &pos, uint8_t uniformType)
     -> ChunkData & {
+  spdlog::info("[ChunkManager] Created chunk at ({},{},{})", pos.x, pos.y,
+               pos.z);
   auto [it, inserted] = m_Chunks.try_emplace(pos, pos, uniformType);
   return it->second;
 }
