@@ -8,6 +8,10 @@
 #define CHUNK_VOLUME (CHUNK_AREA * CHUNK_SIZE) // # Blocks in a whole chunk
 
 using ChunkPosition = glm::uvec3;
+using BlockPosition = glm::uvec3;
+
+// Convert a block index in chunk to position in chunk
+auto BlockIdx2Pos(int idx) -> BlockPosition;
 
 namespace Face {
 
