@@ -2,7 +2,7 @@
 #include "World/Coordinates.hh"
 
 ChunkData::ChunkData(const ChunkPosition &pos, uint8_t type) {
-  this->isUniform = true;
+  this->isUniform = false;
   this->uniformType = type;
   this->position = pos;
   this->isDirty = true;

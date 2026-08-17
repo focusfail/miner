@@ -2,7 +2,7 @@
 
 void World::Init() {
   m_ChunkRenderer.Init();
-  // temporary: single test chunk at origin so there's something to render
+
   m_ChunkManager.CreateChunk(ChunkPosition{0, 0, 0}, 1);
   m_ChunkManager.CreateChunk(ChunkPosition{0, 0, 1}, 1);
   m_ChunkManager.CreateChunk(ChunkPosition{0, 1, 1}, 1);
