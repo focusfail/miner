@@ -1,5 +1,6 @@
 #include "Render/World/Chunk/ChunkMesher.hh"
 #include "Render/World/Chunk/ChunkMesh.hh"
+#include "World/Coordinates.hh"
 
 static const std::array<ChunkMeshVertex, 36> blockVertices = {{
     //  Front (+Z)
@@ -68,6 +69,20 @@ auto ChunkMesher::GenerateMesh(const ChunkData &chunk) -> ChunkMeshData {
       }
     }
   } else {
+    mesh.vertices.reserve(blockVertices.size() * 2048);
+
+    for (int blockIndex = 0; blockIndex < chunk.blocks->size(); blockIndex++) {
+      auto pos = BlockIdx2Pos(blockIndex);
+
+      for (int face = 0; face != static_cast<int>(Face::Last); face++) {
+        for (int faceVertexIndex = 0; faceVertexIndex < 6; faceVertexIndex++) {
+          int vertexIndex = faceVertexIndex + face * 6;
+          const auto &ogVertex = blockVertices[vertexIndex];
+          glm::vec3 newPos = ogVertex.position + glm::vec3(pos);
+          mesh.vertices.emplace_back(ChunkMeshVertex{newPos, ogVertex.face});
+        }
+      }
+    }
   }
 
   return mesh;
