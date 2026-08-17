@@ -1,0 +1,47 @@
+#include "Render/World/Chunk/ChunkMesh.hh"
+#include <cstddef>
+#include <glad/gl.h>
+#include <spdlog/spdlog.h>
+
+void ChunkMesh::Upload(const ChunkMeshData &mesh) {
+  if (this->vao == 0) {
+    glCreateVertexArrays(1, &this->vao);
+
+    glVertexArrayAttribFormat(this->vao, 0, 3, GL_FLOAT, GL_FALSE,
+                              offsetof(ChunkMeshVertex, position));
+    glVertexArrayAttribFormat(this->vao, 1, 1, GL_UNSIGNED_BYTE, GL_FALSE,
+                              offsetof(ChunkMeshVertex, face));
+
+    glVertexArrayAttribBinding(this->vao, 0, 0); // attrib 0 -> binding 0
+    glVertexArrayAttribBinding(this->vao, 1,
+                               0); // attrib 1 -> binding 0 (same buffer)
+
+    glEnableVertexArrayAttrib(vao, 0);
+    glEnableVertexArrayAttrib(vao, 1);
+  }
+
+  if (this->vbo == 0) {
+    glCreateBuffers(1, &this->vbo);
+  }
+
+  // FIX: dont reallocate buffer every time - fine for now
+  glNamedBufferData(this->vbo, mesh.vertices.size() * sizeof(mesh.vertices[0]),
+                    mesh.vertices.data(), GL_STATIC_DRAW);
+  this->numVertices = mesh.vertices.size();
+  glVertexArrayVertexBuffer(this->vao, 0, this->vbo, 0,
+                            sizeof(mesh.vertices[0]));
+}
+
+void ChunkMesh::Destroy() {
+  if (this->vbo != 0) {
+    glDeleteBuffers(1, &this->vbo);
+  }
+  if (this->vao != 0) {
+    glDeleteVertexArrays(1, &this->vao);
+  }
+}
+
+void ChunkMesh::Render() {
+  glBindVertexArray(vao);
+  glDrawArrays(GL_TRIANGLES, 0, this->numVertices);
+}

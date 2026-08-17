@@ -1,0 +1,37 @@
+#pragma once
+
+#include <glm/glm.hpp>
+
+#define CHUNK_SIZE 16 // # Blocks in 1d strip of a chunk
+#define CHUNK_AREA                                                             \
+  (CHUNK_SIZE * CHUNK_SIZE) // # Blocks in a 2d slice of a chunk
+#define CHUNK_VOLUME (CHUNK_AREA * CHUNK_SIZE) // # Blocks in a whole chunk
+
+using ChunkPosition = glm::uvec3;
+
+namespace Face {
+
+enum Face : uint8_t {
+  Front = 0, // +x
+  Back,      // -x
+  Top,       // +y
+  Bottom,    // -y
+  Left,      // -z
+  Right,     // +z
+  Last,
+};
+}
+
+namespace Direction {
+
+enum Direction {
+  Forward,
+  Backward,
+  Up,
+  Down,
+  Left,
+  Right,
+  Last,
+};
+
+}

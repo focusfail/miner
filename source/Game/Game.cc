@@ -1,0 +1,58 @@
+#include "Game/Game.hh"
+#include "Platform/Keys.hh"
+#include "Render/Camera.hh"
+#include "Render/Shader.hh"
+#include "World/Coordinates.hh"
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_float4x4.hpp"
+#include <bitset>
+#include <glad/gl.h>
+#include <memory>
+#include <spdlog/spdlog.h>
+
+void Game::Init() {
+  spdlog::info("[Game]: Init");
+  m_Window = Window::Create("mine", 1920, 1080);
+  m_Window->CaptureMouse(true);
+  gladLoaderLoadGL();
+  glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+  glEnable(GL_DEPTH_TEST);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+void Game::Mainloop() {
+  Camera camera;
+  camera.Init({20, 20, -20});
+
+  m_World.Init();
+
+  while (!m_Window->ShouldClose()) {
+    m_Window->Begin();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    auto &input = m_Window->GetInput();
+
+    std::bitset<Direction::Last> dir;
+    if (input.KeyDown(KeyboardKey::W)) {
+      dir.set(Direction::Forward);
+    }
+    if (input.KeyDown(KeyboardKey::S)) {
+      dir.set(Direction::Backward);
+    }
+    if (input.KeyDown(KeyboardKey::A)) {
+      dir.set(Direction::Left);
+    }
+    if (input.KeyDown(KeyboardKey::D)) {
+      dir.set(Direction::Right);
+    }
+    camera.ProcessMovement(dir, 0.1);
+    camera.ProcessMouse(input.GetMouseDelta());
+
+    m_World.Update();
+
+    m_World.Render(camera);
+    m_Window->End();
+  }
+}
+
+std::weak_ptr<Window> Game::GetGameWindow() const { return m_Window; }
