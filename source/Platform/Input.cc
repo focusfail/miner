@@ -30,26 +30,51 @@ void Input::MouseFun(GLFWwindow *windowPtr, double x, double y) {
   input.m_NewMousePosition = {x, y};
 }
 
-void Input::Update() {
+void Input::Begin() {
+  for (auto &bind : m_Keybinds) {
+    switch (bind.trigger) {
+    case KeyTrigger::PRESSED:
+      if (KeyPressed(bind.key)) {
+        bind.cb();
+      }
+      break;
+    case KeyTrigger::RELEASE:
+      if (KeyReleased(bind.key))
+        bind.cb();
+      break;
+    case KeyTrigger::HELD:
+      if (KeyDown(bind.key))
+        bind.cb();
+      break;
+    }
+  }
+}
+
+void Input::End() {
   std::copy(m_NewKeys.begin(), m_NewKeys.end(), m_OldKeys.begin());
   m_OldMousePosition = m_NewMousePosition;
 }
 
-bool Input::KeyDown(KeyboardKey k) const {
+auto Input::KeyDown(KeyboardKey k) const -> bool {
   return m_NewKeys[static_cast<size_t>(k)];
 }
 
-bool Input::KeyPressed(KeyboardKey k) const {
+auto Input::KeyPressed(KeyboardKey k) const -> bool {
   return m_NewKeys[static_cast<size_t>(k)] &&
          !m_OldKeys[static_cast<size_t>(k)];
 }
 
-bool Input::KeyReleased(KeyboardKey k) const {
+auto Input::KeyReleased(KeyboardKey k) const -> bool {
   return !m_NewKeys[static_cast<size_t>(k)] &&
          m_OldKeys[static_cast<size_t>(k)];
 }
 
-glm::vec2 Input::GetMousePosition() const { return m_NewMousePosition; }
-glm::vec2 Input::GetMouseDelta() const {
+void Input::RegisterKeybind(KeyboardKey k, std::function<void()> cb,
+                            KeyTrigger t) {
+  m_Keybinds.emplace_back(k, t, cb);
+}
+
+auto Input::GetMousePosition() const -> glm::vec2 { return m_NewMousePosition; }
+auto Input::GetMouseDelta() const -> glm::vec2 {
   return m_NewMousePosition - m_OldMousePosition;
 }
