@@ -37,11 +37,14 @@ bool Window::ShouldClose() const {
   return glfwWindowShouldClose(m_Glfw) || m_Input.KeyDown(KeyboardKey::ESCAPE);
 }
 
-void Window::Begin() { glfwPollEvents(); }
+void Window::Begin() {
+  glfwPollEvents();
+  m_Input.Begin();
+}
 
 void Window::End() {
   glfwSwapBuffers(m_Glfw);
-  m_Input.Update();
+  m_Input.End();
 }
 
 int Window::GetWidth() const {
