@@ -22,12 +22,18 @@ void Game::Mainloop() {
   camera.Init({20, 20, -20});
 
   m_World.Init();
+  auto &input = m_Window->GetInput();
+  bool poly = false;
+
+  input.RegisterKeybind(KeyboardKey::F7, [&poly]() {
+    glPolygonMode(poly ? GL_FRONT : GL_FRONT_AND_BACK,
+                  poly ? GL_FILL : GL_LINE);
+    poly = !poly;
+  });
 
   while (!m_Window->ShouldClose()) {
     m_Window->Begin();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    auto &input = m_Window->GetInput();
 
     std::bitset<Direction::Last> dir;
     if (input.KeyDown(KeyboardKey::W)) {
