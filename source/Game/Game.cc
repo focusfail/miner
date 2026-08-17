@@ -1,10 +1,7 @@
 #include "Game/Game.hh"
 #include "Platform/Keys.hh"
 #include "Render/Camera.hh"
-#include "Render/Shader.hh"
 #include "World/Coordinates.hh"
-#include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/matrix_float4x4.hpp"
 #include <bitset>
 #include <glad/gl.h>
 #include <memory>
