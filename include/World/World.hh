@@ -3,6 +3,7 @@
 #include "Render/Camera.hh"
 #include "Render/World/Chunk/ChunkMesher.hh"
 #include "Render/World/Chunk/ChunkRenderer.hh"
+#include "World/Block/BlockRegistry.hh"
 #include "World/Chunk/ChunkManager.hh"
 
 #include "Util/NonCopyable.hh"
@@ -35,4 +36,5 @@ private:
   ChunkMesher m_ChunkMesher;
   ChunkManager m_ChunkManager;
   ChunkRenderer m_ChunkRenderer;
+  BlockRegistry m_BlockRegistry;
 };

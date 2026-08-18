@@ -1,27 +1,28 @@
 #pragma once
 
+#include "World/Block/Block.hh"
 #include "World/Coordinates.hh"
 
 #include <array>
 #include <cstdint>
 #include <memory>
 
-using ChunkBlockArray = std::unique_ptr<std::array<uint8_t, CHUNK_VOLUME>>;
+using ChunkBlockArray = std::unique_ptr<std::array<Block, CHUNK_VOLUME>>;
 
 struct ChunkData {
   bool isDirty = false;
   bool isUniform = true;
-  uint8_t uniformType;
+  BlockID uniformType;
   ChunkPosition position;
   ChunkBlockArray blocks;
 
-  ChunkData(const ChunkPosition &pos, uint8_t uniformType);
+  ChunkData(const ChunkPosition &pos, BlockID uniformType);
 
-  auto GetBlock(const BlockPosition &pos) const -> uint32_t;
-  auto GetBlock(int idx) const -> uint32_t;
+  auto GetBlock(const BlockPosition &pos) const -> Block;
+  auto GetBlock(int idx) const -> Block;
 
-  void SetBlock(const BlockPosition &pos, uint32_t block);
+  void SetBlock(const BlockPosition &pos, BlockID block);
 
-  void FillUniform(uint8_t type);
+  void FillUniform(BlockID type);
   void EnsureMutable();
 };

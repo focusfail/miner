@@ -1,7 +1,9 @@
 #include "Game/Game.hh"
+#include "Platform/Input.hh"
 #include "Platform/Keys.hh"
 #include "Render/Camera.hh"
-#include "World/Coordinates.hh"
+#include "World/Block/Block.hh"
+#include "World/World.hh"
 #include <glad/gl.h>
 #include <memory>
 #include <spdlog/spdlog.h>
@@ -17,7 +19,7 @@ void Game::Init() {
 
 void Game::Mainloop() {
   Camera camera;
-  camera.Init({20, 20, -20});
+  camera.Init({8.5, 3, 8.5});
 
   m_World.Init();
   auto &input = m_Window->GetInput();
@@ -29,11 +31,21 @@ void Game::Mainloop() {
     poly = !poly;
   });
 
-  input.RegisterKeybind(KeyboardKey::SPACE, [this]() {
-    if (auto chunk = m_World.TryGetChunkDataByPosition({0, 0, 0})) {
-      (*chunk)->ForceMutable();
-    }
-  });
+  input.RegisterKeybind(
+      KeyboardKey::TAB,
+      [this, &camera]() {
+        glm::vec3 start = camera.GetPosition();
+        glm::vec3 end = start + camera.GetLookDirection() * 10000.0f;
+        if (auto maybeHit = m_World.CastRay(start, end)) {
+          auto &hit = *maybeHit;
+
+          if (auto chunk =
+                  m_World.TryGetChunkDataByPosition(hit.chunkPosition)) {
+            (*chunk)->SetBlock(hit.blockPosition, 0);
+          }
+        }
+      },
+      KeyTrigger::HELD);
 
   while (!m_Window->ShouldClose()) {
     m_Window->Begin();

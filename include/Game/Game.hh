@@ -5,6 +5,7 @@
 #include "Platform/Window.hh"
 #include "Util/NonCopyable.hh"
 #include "Util/NonMoveable.hh"
+#include "World/Block/BlockRegistry.hh"
 #include "World/World.hh"
 
 class Game : private NonCopyable, private NonMovable {

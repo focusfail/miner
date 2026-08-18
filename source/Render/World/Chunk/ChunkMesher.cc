@@ -52,11 +52,12 @@ static const std::array<ChunkMeshVertex, 36> blockVertices = {{
     {{1, 0, 0}, Face::Right}, // back bottom
 }};
 
-auto ChunkMesher::GenerateMesh(const ChunkData &chunk) -> ChunkMeshData {
+auto ChunkMesher::GenerateMesh(const ChunkData &chunk, BlockRegistry &reg)
+    -> ChunkMeshData {
   ChunkMeshData mesh;
   mesh.position = chunk.position;
 
-  if (chunk.isUniform) {
+  if (chunk.isUniform && !reg.IsTransparent(chunk.uniformType)) {
 
     mesh.vertices.reserve(blockVertices.size());
 
@@ -73,7 +74,11 @@ auto ChunkMesher::GenerateMesh(const ChunkData &chunk) -> ChunkMeshData {
 
     for (size_t blockIndex = 0; blockIndex < chunk.blocks->size();
          blockIndex++) {
+      auto block = chunk.GetBlock(blockIndex);
       auto pos = BlockIdx2Pos(blockIndex);
+
+      if (reg.IsTransparent(block.id))
+        continue;
 
       for (int face = 0; face != static_cast<int>(Face::Last); face++) {
         for (int faceVertexIndex = 0; faceVertexIndex < 6; faceVertexIndex++) {

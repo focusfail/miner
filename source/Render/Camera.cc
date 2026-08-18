@@ -45,10 +45,10 @@ void Camera::ProcessMovement(bool fwd, bool bwd, bool left, bool right, bool up,
     m_Position += m_Right * velocity;
   }
   if (up) {
-    m_Position += m_Up * velocity;
+    m_Position += m_WorldUp * velocity;
   }
   if (down) {
-    m_Position -= m_Up * velocity;
+    m_Position -= m_WorldUp * velocity;
   }
 }
 

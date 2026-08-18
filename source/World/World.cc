@@ -1,4 +1,5 @@
 #include "World/World.hh"
+#include "World/Block/Block.hh"
 #include "World/Chunk/Chunk.hh"
 #include "World/Coordinates.hh"
 #include "glm/geometric.hpp"
@@ -7,12 +8,20 @@
 void World::Init() {
   m_ChunkRenderer.Init();
 
-  m_ChunkManager.CreateChunk(ChunkPosition{0, 0, 0}, 1);
+  m_ChunkManager.CreateChunk(ChunkPosition{0, 0, 0}, 0);
+  m_ChunkManager.CreateChunk(ChunkPosition{1, 0, 1}, 1);
   m_ChunkManager.CreateChunk(ChunkPosition{0, 0, 1}, 1);
-  m_ChunkManager.CreateChunk(ChunkPosition{0, 1, 1}, 1);
-  m_ChunkManager.CreateChunk(ChunkPosition{1, 1, 1}, 1);
+  m_ChunkManager.CreateChunk(ChunkPosition{0, 0, -1}, 1);
   m_ChunkManager.CreateChunk(ChunkPosition{1, 0, 0}, 1);
-  m_ChunkManager.CreateChunk(ChunkPosition{1, 1, 0}, 1);
+  m_ChunkManager.CreateChunk(ChunkPosition{-1, 0, 0}, 1);
+  m_ChunkManager.CreateChunk(ChunkPosition{0, 1, 0}, 1);
+
+  for (int i = -1; i > -10; i--) {
+    m_ChunkManager.CreateChunk(ChunkPosition{0, i, 0}, 1);
+  }
+
+  m_BlockRegistry.Register("air", false, true);
+  m_BlockRegistry.Register("stone", true, false);
 }
 
 void World::Update() {
@@ -20,7 +29,7 @@ void World::Update() {
   auto dirty = m_ChunkManager.GetDirtyChunks();
   for (const auto &pos : dirty) {
     ChunkData &chunk = m_ChunkManager.GetChunkDataByPosition(pos);
-    ChunkMeshData meshData = m_ChunkMesher.GenerateMesh(chunk);
+    ChunkMeshData meshData = m_ChunkMesher.GenerateMesh(chunk, m_BlockRegistry);
     m_ChunkRenderer.UploadMesh(meshData);
     chunk.isDirty = false;
   }
@@ -83,13 +92,13 @@ auto World::CastRay(glm::vec3 start, glm::vec3 end)
   while (currentDist <= maxDist) {
     auto [chunkPos, blockPos] = WorldPos2ChunkAndBlock(glm::vec3(x, y, z));
 
-    uint32_t blockType = 0;
+    Block block = BlockFromID(0);
     auto chunkOpt = TryGetChunkDataByPosition(chunkPos);
     if (chunkOpt.has_value()) {
-      blockType = chunkOpt.value()->GetBlock(blockPos);
+      block = chunkOpt.value()->GetBlock(blockPos);
     }
 
-    if (blockType != 0) {
+    if (m_BlockRegistry.IsSolid(block.id)) {
       HitResult result;
       result.chunkPosition = chunkPos;
       result.blockPosition = blockPos;
