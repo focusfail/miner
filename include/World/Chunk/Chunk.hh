@@ -16,6 +16,12 @@ struct ChunkData {
   ChunkBlockArray blocks;
 
   ChunkData(const ChunkPosition &pos, uint8_t uniformType);
+
+  auto GetBlock(const BlockPosition &pos) const -> uint32_t;
+  auto GetBlock(int idx) const -> uint32_t;
+
+  void SetBlock(const BlockPosition &pos, uint32_t block);
+
   void FillUniform(uint8_t type);
-  void ForceMutable();
+  void EnsureMutable();
 };
