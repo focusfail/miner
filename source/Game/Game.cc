@@ -2,67 +2,74 @@
 #include "Platform/Input.hh"
 #include "Platform/Keys.hh"
 #include "Render/Camera.hh"
-#include "World/Block/Block.hh"
+#include "TaskScheduler.h"
 #include "World/World.hh"
 #include <glad/gl.h>
 #include <memory>
 #include <spdlog/spdlog.h>
 
 void Game::Init() {
-  spdlog::info("[Game]: Init");
-  m_Window = Window::Create("mine", 1920, 1080);
-  m_Window->CaptureMouse(true);
-  gladLoaderLoadGL();
-  glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
-  glEnable(GL_DEPTH_TEST);
+    spdlog::info("[Game]: Init");
+    m_Window = Window::Create("mine", 1920, 1080);
+    m_Window->CaptureMouse(true);
+    m_Sched.Initialize();
+    gladLoaderLoadGL();
+    glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+    glEnable(GL_DEPTH_TEST);
+    glLineWidth(5.0f);
+
+    m_DebugRenderer.Init();
+    m_World.Init();
+    m_Player.SetPosition({8.5, 2, 8.5});
 }
 
 void Game::Mainloop() {
-  Camera camera;
-  camera.Init({8.5, 3, 8.5});
+    auto &input = m_Window->GetInput();
+    bool poly = false;
 
-  m_World.Init();
-  auto &input = m_Window->GetInput();
-  bool poly = false;
+    Keybind toggleWireframe{.key = KeyboardKey::F4, .cb = [&poly]() {
+                                glPolygonMode(poly ? GL_FRONT
+                                                   : GL_FRONT_AND_BACK,
+                                              poly ? GL_FILL : GL_LINE);
+                                poly = !poly;
+                            }};
+    Keybind mineBlock{
+        .btn = MouseButton::LMB, .cb = [this]() {
+            glm::vec3 start = m_Player.GetEyePosition();
+            glm::vec3 end = start + m_Player.GetLookDirection() * 100.0f;
+            if (auto hit = m_World.CastRay(start, end)) {
+                if (auto chunk =
+                        m_World.TryGetChunkDataByPosition(hit->chunkPosition)) {
+                    chunk->SetBlock(hit->blockPosition, 0);
+                }
+                m_DebugRenderer.DrawLine(start, hit->position, 1.0f);
+            }
+        }};
 
-  input.RegisterKeybind(KeyboardKey::F7, [&poly]() {
-    glPolygonMode(poly ? GL_FRONT : GL_FRONT_AND_BACK,
-                  poly ? GL_FILL : GL_LINE);
-    poly = !poly;
-  });
+    Keybind doubleTest{
+        .key = KeyboardKey::SPACE,
+        .trigger = InputTrigger::DOUBLE,
+        .cb = [this]() { m_Player.SetFlight(!m_Player.GetFlight()); }};
 
-  input.RegisterKeybind(
-      KeyboardKey::TAB,
-      [this, &camera]() {
-        glm::vec3 start = camera.GetPosition();
-        glm::vec3 end = start + camera.GetLookDirection() * 10000.0f;
-        if (auto maybeHit = m_World.CastRay(start, end)) {
-          auto &hit = *maybeHit;
+    input.RegisterKeybind(toggleWireframe);
+    input.RegisterKeybind(doubleTest);
+    input.RegisterKeybind(mineBlock);
 
-          if (auto chunk =
-                  m_World.TryGetChunkDataByPosition(hit.chunkPosition)) {
-            (*chunk)->SetBlock(hit.blockPosition, 0);
-          }
-        }
-      },
-      KeyTrigger::HELD);
+    while (!m_Window->ShouldClose()) {
+        m_Window->Begin();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  while (!m_Window->ShouldClose()) {
-    m_Window->Begin();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        float dt = m_Window->GetDeltaTime();
+        auto &camera = m_Player.GetCamera();
+        m_Player.Update(dt, m_World, input);
+        camera.ProcessMouse(input.GetMouseDelta());
 
-    camera.ProcessMovement(
-        input.KeyDown(KeyboardKey::W), input.KeyDown(KeyboardKey::S),
-        input.KeyDown(KeyboardKey::A), input.KeyDown(KeyboardKey::D),
-        input.KeyDown(KeyboardKey::SPACE),
-        input.KeyDown(KeyboardKey::LEFT_CONTROL), 0.1);
-    camera.ProcessMouse(input.GetMouseDelta());
+        m_World.Update();
+        m_World.Render(camera);
+        m_DebugRenderer.Render(camera, dt);
 
-    m_World.Update();
-    m_World.Render(camera);
-
-    m_Window->End();
-  }
+        m_Window->End();
+    }
 }
 
 std::weak_ptr<Window> Game::GetGameWindow() const { return m_Window; }

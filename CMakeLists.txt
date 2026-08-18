@@ -9,6 +9,7 @@ add_subdirectory("./vendor/glfw")
 add_subdirectory("./vendor/glm")
 add_subdirectory("./vendor/spdlog")
 add_subdirectory("./vendor/enkiTS")
+add_subdirectory("./vendor/magic_enum")
 
 project(
     ${TARGET}
@@ -38,6 +39,7 @@ target_link_libraries(
     glm
     spdlog
     enkiTS
+    magic_enum
 )
 target_compile_definitions(
     ${TARGET}
@@ -47,7 +49,7 @@ target_compile_definitions(
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-target_compile_options(${TARGET} PRIVATE -ggdb -Wall -fno-omit-frame-pointer)
+target_compile_options(${TARGET} PRIVATE -ggdb -O0 -Wall -fno-omit-frame-pointer)
 endif()
 if(CMAKE_BUILD_TYPE STREQUAL "DebugSan")
 target_compile_options(${TARGET} PRIVATE -fsanitize=address,undefined,leak -ggdb -Wall -fno-omit-frame-pointer)

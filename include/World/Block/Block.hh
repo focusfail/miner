@@ -15,7 +15,11 @@ struct BlockDefinition {
 };
 
 struct Block {
-  BlockID id;
+  struct {
+    uint8_t breakStage : 4 = 0;
+    uint8_t dummy : 4 = 0;
+  };
+  BlockID id = 0;
 };
 
 auto BlockFromID(BlockID id) -> Block;

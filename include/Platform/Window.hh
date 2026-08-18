@@ -12,26 +12,29 @@
 class Window : std::enable_shared_from_this<Window>,
                private NonCopyable,
                private NonMovable {
-public:
-  ~Window();
+  public:
+    ~Window();
 
-  static std::shared_ptr<Window> Create(std::string title, int width,
-                                        int height);
-  void Begin();
-  void End();
-  bool ShouldClose() const;
+    static std::shared_ptr<Window> Create(std::string title, int width,
+                                          int height);
+    void Begin();
+    void End();
+    bool ShouldClose() const;
 
-  int GetWidth() const;
-  int GetHeight() const;
+    int GetWidth() const;
+    int GetHeight() const;
+    float GetDeltaTime() const;
 
-  void CaptureMouse(bool shouldCapture);
+    void CaptureMouse(bool shouldCapture);
 
-  Input &GetInput();
-  GLFWwindow *GetGlfwWindow() const;
+    Input &GetInput();
+    GLFWwindow *GetGlfwWindow() const;
 
-private:
-  Window(std::string title, int width, int height);
+  private:
+    Window(std::string title, int width, int height);
 
-  GLFWwindow *m_Glfw;
-  Input m_Input;
+    double m_OldTime;
+    double m_NewTime;
+    GLFWwindow *m_Glfw;
+    Input m_Input;
 };
