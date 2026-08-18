@@ -16,5 +16,6 @@ struct ChunkData {
   ChunkBlockArray blocks;
 
   ChunkData(const ChunkPosition &pos, uint8_t uniformType);
-  void Fill(uint8_t type);
+  void FillUniform(uint8_t type);
+  void ForceMutable();
 };

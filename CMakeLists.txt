@@ -8,6 +8,7 @@ add_subdirectory("./vendor/glad")
 add_subdirectory("./vendor/glfw")
 add_subdirectory("./vendor/glm")
 add_subdirectory("./vendor/spdlog")
+add_subdirectory("./vendor/enkiTS")
 
 project(
     ${TARGET}
@@ -45,7 +46,7 @@ target_compile_definitions(
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-target_compile_options(${TARGET} PRIVATE -ggdb -Wall)
+target_compile_options(${TARGET} PRIVATE -ggdb -Wall -fno-omit-frame-pointer)
 endif()
 if(CMAKE_BUILD_TYPE STREQUAL "DebugSan")
 target_compile_options(${TARGET} PRIVATE -fsanitize=address,undefined,leak -ggdb -Wall -fno-omit-frame-pointer)

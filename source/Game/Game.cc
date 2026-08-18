@@ -14,7 +14,6 @@ void Game::Init() {
   gladLoaderLoadGL();
   glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
   glEnable(GL_DEPTH_TEST);
-  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void Game::Mainloop() {
@@ -29,6 +28,12 @@ void Game::Mainloop() {
     glPolygonMode(poly ? GL_FRONT : GL_FRONT_AND_BACK,
                   poly ? GL_FILL : GL_LINE);
     poly = !poly;
+  });
+
+  input.RegisterKeybind(KeyboardKey::SPACE, [this]() {
+    if (auto chunk = m_World.TryGetChunkDataByPosition({0, 0, 0})) {
+      (*chunk)->ForceMutable();
+    }
   });
 
   while (!m_Window->ShouldClose()) {

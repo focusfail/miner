@@ -71,7 +71,8 @@ auto ChunkMesher::GenerateMesh(const ChunkData &chunk) -> ChunkMeshData {
   } else {
     mesh.vertices.reserve(blockVertices.size() * 2048);
 
-    for (int blockIndex = 0; blockIndex < chunk.blocks->size(); blockIndex++) {
+    for (size_t blockIndex = 0; blockIndex < chunk.blocks->size();
+         blockIndex++) {
       auto pos = BlockIdx2Pos(blockIndex);
 
       for (int face = 0; face != static_cast<int>(Face::Last); face++) {
