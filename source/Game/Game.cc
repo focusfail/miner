@@ -2,7 +2,6 @@
 #include "Platform/Keys.hh"
 #include "Render/Camera.hh"
 #include "World/Coordinates.hh"
-#include <bitset>
 #include <glad/gl.h>
 #include <memory>
 #include <spdlog/spdlog.h>
@@ -40,25 +39,16 @@ void Game::Mainloop() {
     m_Window->Begin();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    std::bitset<Direction::Last> dir;
-    if (input.KeyDown(KeyboardKey::W)) {
-      dir.set(Direction::Forward);
-    }
-    if (input.KeyDown(KeyboardKey::S)) {
-      dir.set(Direction::Backward);
-    }
-    if (input.KeyDown(KeyboardKey::A)) {
-      dir.set(Direction::Left);
-    }
-    if (input.KeyDown(KeyboardKey::D)) {
-      dir.set(Direction::Right);
-    }
-    camera.ProcessMovement(dir, 0.1);
+    camera.ProcessMovement(
+        input.KeyDown(KeyboardKey::W), input.KeyDown(KeyboardKey::S),
+        input.KeyDown(KeyboardKey::A), input.KeyDown(KeyboardKey::D),
+        input.KeyDown(KeyboardKey::SPACE),
+        input.KeyDown(KeyboardKey::LEFT_CONTROL), 0.1);
     camera.ProcessMouse(input.GetMouseDelta());
 
     m_World.Update();
-
     m_World.Render(camera);
+
     m_Window->End();
   }
 }

@@ -37,6 +37,7 @@ target_link_libraries(
     glfw
     glm
     spdlog
+    enkiTS
 )
 target_compile_definitions(
     ${TARGET}

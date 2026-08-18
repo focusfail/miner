@@ -13,9 +13,7 @@ using BlockPosition = glm::uvec3;
 // Convert a block index in chunk to position in chunk
 auto BlockIdx2Pos(int idx) -> BlockPosition;
 
-namespace Face {
-
-enum Face : uint8_t {
+enum class Face : uint8_t {
   Front = 0, // +x
   Back,      // -x
   Top,       // +y
@@ -24,18 +22,3 @@ enum Face : uint8_t {
   Right,     // +z
   Last,
 };
-}
-
-namespace Direction {
-
-enum Direction {
-  Forward,
-  Backward,
-  Up,
-  Down,
-  Left,
-  Right,
-  Last,
-};
-
-}

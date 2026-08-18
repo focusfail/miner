@@ -12,7 +12,8 @@ public:
 
   void Init(glm::vec3 position = {0, 0, 0});
   void ProcessMouse(const glm::vec2 delta);
-  void ProcessMovement(std::bitset<Direction::Last> dir, float velocity);
+  void ProcessMovement(bool fwd, bool bwd, bool left, bool right, bool up,
+                       bool down, float velocity);
 
   void SetPosition(glm::vec3 position);
 

@@ -30,19 +30,25 @@ void Camera::ProcessMouse(const glm::vec2 delta) {
   UpdateVectors();
 }
 
-void Camera::ProcessMovement(std::bitset<Direction::Last> direction,
-                             float velocity = 1.0f) {
-  if (direction.test(Direction::Forward)) {
+void Camera::ProcessMovement(bool fwd, bool bwd, bool left, bool right, bool up,
+                             bool down, float velocity) {
+  if (fwd) {
     m_Position += m_Front * velocity;
   }
-  if (direction.test(Direction::Backward)) {
+  if (bwd) {
     m_Position -= m_Front * velocity;
   }
-  if (direction.test(Direction::Left)) {
+  if (left) {
     m_Position -= m_Right * velocity;
   }
-  if (direction.test(Direction::Right)) {
+  if (right) {
     m_Position += m_Right * velocity;
+  }
+  if (up) {
+    m_Position += m_Up * velocity;
+  }
+  if (down) {
+    m_Position -= m_Up * velocity;
   }
 }
 

@@ -7,7 +7,7 @@
 
 struct ChunkMeshVertex {
   glm::vec3 position;
-  Face::Face face;
+  Face face;
 };
 
 struct ChunkMeshData {
