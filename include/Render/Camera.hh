@@ -17,6 +17,9 @@ public:
 
   void SetPosition(glm::vec3 position);
 
+  auto GetPosition() const -> glm::vec3 { return m_Position; }
+  auto GetLookDirection() const -> glm::vec3 { return m_Front; }
+
   auto GetViewMatrix() const -> glm::mat4;
 
 private:
