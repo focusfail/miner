@@ -52,7 +52,7 @@ void DebugRenderer::Render(Camera &cam, float dt) {
 
     glNamedBufferSubData(m_VBO, 0, sizeof(verts[0]) * verts.size(),
                          verts.data());
-    m_Program->Use();
+    m_Program->Bind();
     m_Program->SetUniform(0, proj * cam.GetViewMatrix());
     glBindVertexArray(m_VAO);
     glDrawArrays(GL_LINES, 0, verts.size());

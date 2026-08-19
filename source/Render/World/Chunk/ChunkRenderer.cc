@@ -4,8 +4,8 @@
 void ChunkRenderer::Init() {
     auto &assets = AssetsManager::GetInstance();
 
-    m_Program = assets.GetShaderProgram("chunk:basic");
-    m_Texture = assets.GetTexture("stone");
+    m_Program = assets.GetShaderProgram("chunk:textured");
+    m_Texture = assets.GetTexture("block:stone");
 
     assert(m_Program->IsValid());
 }
@@ -31,8 +31,10 @@ void ChunkRenderer::Render(const Camera &cam) {
         glm::perspective(glm::radians(75.0f), 1920.0f / 1080.0f, 0.1f, 1000.0f);
     glm::mat4 mvp = proj * cam.GetViewMatrix();
 
-    m_Program->Use();
+    m_Program->Bind();
+    m_Texture->Bind();
     m_Program->SetUniform(0, mvp);
+
     for (auto &[pos, mesh] : m_Meshes) {
         m_Program->SetUniform(1, mesh.position * CHUNK_SIZE);
         mesh.Render();

@@ -9,6 +9,8 @@
 class Texture : private NonMovable, private NonCopyable {
   public:
     void Load(std::vector<uint8_t> buffer);
+    void Bind();
+
     bool IsValid() const { return m_Texture != 0; }
 
     int GetWidth() const { return m_Width; }

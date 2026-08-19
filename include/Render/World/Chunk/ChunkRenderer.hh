@@ -2,6 +2,7 @@
 
 #include "Render/Camera.hh"
 #include "Render/ShaderProgram.hh"
+#include "Render/Texture.hh"
 #include "Render/World/Chunk/ChunkMesh.hh"
 #include "Util/NonCopyable.hh"
 #include "Util/NonMoveable.hh"
@@ -20,5 +21,6 @@ class ChunkRenderer : private NonCopyable, private NonMovable {
 
   private:
     ShaderProgram *m_Program;
+    Texture *m_Texture;
     std::unordered_map<ChunkPosition, ChunkMesh> m_Meshes;
 };
