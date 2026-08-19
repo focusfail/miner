@@ -6,23 +6,23 @@
 #include <source_location>
 #include <spdlog/spdlog.h>
 
-Shader::~Shader() { Unload(); }
+ShaderProgram::~ShaderProgram() { Unload(); }
 
-void Shader::Load(const std::string &vFile, const std::string &fFile,
-                  std::source_location loc) {
+void ShaderProgram::Load(const std::string &vFile, const std::string &fFile,
+                         std::source_location loc) {
     std::string v = ReadFile(vFile);
     std::string f = ReadFile(fFile);
     LoadStr(v, f, loc);
 }
 
-void Shader::Unload() {
+void ShaderProgram::Unload() {
     if (m_Program != 0) {
         glDeleteProgram(m_Program);
     }
 }
 
-void Shader::LoadStr(const std::string &v, const std::string &f,
-                     std::source_location loc) {
+void ShaderProgram::LoadStr(const std::string &v, const std::string &f,
+                            std::source_location loc) {
     uint32_t vertexShader = CompileShader(v, GL_VERTEX_SHADER, loc);
     uint32_t fragmentShader = CompileShader(f, GL_FRAGMENT_SHADER, loc);
     uint32_t program = glCreateProgram();
@@ -49,18 +49,18 @@ void Shader::LoadStr(const std::string &v, const std::string &f,
     m_Program = program;
 }
 
-void Shader::Use() { glUseProgram(m_Program); }
+void ShaderProgram::Use() { glUseProgram(m_Program); }
 
-void Shader::SetUniform(uint32_t location, const glm::mat4 &matrix) {
+void ShaderProgram::SetUniform(uint32_t location, const glm::mat4 &matrix) {
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::SetUniform(uint32_t location, const glm::vec3 &vector) {
+void ShaderProgram::SetUniform(uint32_t location, const glm::vec3 &vector) {
     glUniform3fv(location, 1, glm::value_ptr(vector));
 }
 
-uint32_t Shader::CompileShader(const std::string &source, uint32_t type,
-                               std::source_location loc) {
+uint32_t ShaderProgram::CompileShader(const std::string &source, uint32_t type,
+                                      std::source_location loc) {
     uint32_t shader = glCreateShader(type);
     const char *cSource = source.c_str();
     int sourceLen = source.size();

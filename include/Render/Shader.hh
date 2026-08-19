@@ -8,10 +8,10 @@
 #include "Util/NonCopyable.hh"
 #include "Util/NonMoveable.hh"
 
-class Shader : private NonMovable, private NonCopyable {
+class ShaderProgram : private NonMovable, private NonCopyable {
   public:
-    Shader() = default;
-    ~Shader();
+    ShaderProgram() = default;
+    ~ShaderProgram();
 
     void Load(const std::string &v, const std::string &f,
               std::source_location loc = std::source_location::current());

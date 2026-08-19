@@ -14,13 +14,13 @@ class AssetsManager {
 
     void Init();
 
-    Shader *GetShader(const std::string &name);
+    ShaderProgram *GetShaderProgram(const std::string &name);
 
   private:
     AssetsManager();
     ~AssetsManager();
     struct FileSystem;
 
-    std::unordered_map<std::string, std::unique_ptr<Shader>> m_Shaders;
+    std::unordered_map<std::string, std::unique_ptr<ShaderProgram>> m_Shaders;
     std::unique_ptr<FileSystem> m_FS;
 };

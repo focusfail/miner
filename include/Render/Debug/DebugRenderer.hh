@@ -25,7 +25,7 @@ class DebugRenderer {
     void Render(Camera &cam, float dt);
 
   private:
-    Shader *m_Program;
+    ShaderProgram *m_Program;
     uint32_t m_VAO;
     uint32_t m_VBO;
     size_t m_MaxSize;

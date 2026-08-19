@@ -60,7 +60,7 @@ void AssetsManager::Init() {
     spdlog::info("[AssetsManager] Mounted filesystem");
 }
 
-Shader *AssetsManager::GetShader(const std::string &name) {
+ShaderProgram *AssetsManager::GetShaderProgram(const std::string &name) {
     auto it = m_Shaders.find(name);
     if (it != m_Shaders.end()) {
         return it->second.get();
@@ -85,12 +85,12 @@ Shader *AssetsManager::GetShader(const std::string &name) {
         exit(1);
     }
 
-    auto shader = std::make_unique<Shader>();
+    auto shader = std::make_unique<ShaderProgram>();
     shader->LoadStr(std::string(vBuf.begin(), vBuf.end()),
                     std::string(fBuf.begin(), fBuf.end()));
 
     spdlog::info("[AssetsManager] Loaded shader: {}", name);
-    Shader *p = shader.get();
+    ShaderProgram *p = shader.get();
 
     m_Shaders[name] = std::move(shader);
     return p;

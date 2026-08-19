@@ -19,6 +19,6 @@ class ChunkRenderer : private NonCopyable, private NonMovable {
     void Destroy();
 
   private:
-    Shader *m_Program;
+    ShaderProgram *m_Program;
     std::unordered_map<ChunkPosition, ChunkMesh> m_Meshes;
 };
