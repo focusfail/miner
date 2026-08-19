@@ -14,6 +14,12 @@ struct DebugState {
     bool debugDraw = false;
 };
 
+struct GameState {
+    int blockBreakStagesPerMine = 1;
+    float blockMineTimeout = 0.1f;
+    float blockMineTimer = 0.0f;
+};
+
 class Game : private NonCopyable, private NonMovable {
   public:
     static Game &GetInstance() {
@@ -34,5 +40,6 @@ class Game : private NonCopyable, private NonMovable {
     Player m_Player;
     DebugRenderer m_DebugRenderer;
     DebugState m_DebugState;
+    GameState m_GameState;
     enki::TaskScheduler m_Sched;
 };

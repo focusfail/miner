@@ -43,13 +43,23 @@ void Game::Mainloop() {
                             }};
 
     Keybind mineBlock{
-        .btn = MouseButton::LMB, .cb = [this]() {
+        .btn = MouseButton::LMB,
+        .trigger = InputTrigger::CONTINUOS,
+        .cb = [this]() {
             glm::vec3 start = m_Player.GetEyePosition();
             glm::vec3 end = start + m_Player.GetLookDirection() * 100.0f;
             if (auto hit = m_World.CastRay(start, end)) {
+                if (m_GameState.blockMineTimer < m_GameState.blockMineTimeout) {
+                    m_GameState.blockMineTimer += m_Window.GetDeltaTime();
+                    return;
+                }
+                m_GameState.blockMineTimer = 0.0f;
+
                 if (auto chunk =
                         m_World.TryGetChunkDataByPosition(hit->chunkPosition)) {
-                    chunk->SetBlock(hit->blockPosition, 0);
+                    chunk->SetBlockBreakStage(
+                        hit->blockPosition,
+                        chunk->GetBlockBreakStage(hit->blockPosition) + 1);
                 }
                 m_DebugRenderer.DrawLine(start, hit->position, 1.0f);
             }

@@ -65,7 +65,11 @@ void ChunkData::SetBlockBreakStage(const BlockPosition &pos, uint8_t stage) {
         return;
 
     assert(stage < 15 && "Invalid break stage");
-    this->blocks->at(pos.Idx().get()).breakStage = stage;
+    if (stage >= 14) {
+        this->blocks->at(pos.Idx().get()) = BlockFromID(0);
+    } else {
+        this->blocks->at(pos.Idx().get()).breakStage = stage;
+    }
 }
 
 uint8_t ChunkData::GetBlockBreakStage(const BlockPosition &pos) {
