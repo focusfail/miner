@@ -7,6 +7,18 @@
 #include <spdlog/spdlog.h>
 #include <vfspp/VFS.h>
 
+std::string assetName2Path(const std::string &root, const std::string &name,
+                           const std::string &ext) {
+    auto copy = name;
+    for (char &c : copy) {
+        if (c == ':') {
+            c = '/';
+        }
+    }
+
+    return root + copy + ext;
+}
+
 struct AssetsManager::FileSystem {
     void MountNative(const std::string &realDir, const std::string &virtDir) {
         vfs = std::make_unique<vfspp::VirtualFileSystem>();
@@ -67,14 +79,15 @@ ShaderProgram *AssetsManager::GetShaderProgram(const std::string &name) {
         return it->second.get();
     }
 
-    if (!m_FS->Exists("/" + name + ".vert") ||
-        !m_FS->Exists("/" + name + ".frag")) {
+    auto vertPath = assetName2Path("/shaders/", name, ".vert");
+    auto fragPath = assetName2Path("/shaders/", name, ".frag");
+    if (!m_FS->Exists(vertPath) || !m_FS->Exists(fragPath)) {
         spdlog::error("[AssetsManager] File does not exist: {}", name);
         exit(1);
     }
 
-    auto vertData = m_FS->Read("/" + name + ".vert");
-    auto fragData = m_FS->Read("/" + name + ".frag");
+    auto vertData = m_FS->Read(vertPath);
+    auto fragData = m_FS->Read(fragPath);
 
     if (vertData.empty() || fragData.empty()) {
         spdlog::error("[AssetsManager] Failed to load shader: {}", name);
@@ -98,7 +111,7 @@ Texture *AssetsManager::GetTexture(const std::string &name) {
         return it->second.get();
     }
 
-    std::string path = "/" + name + ".png";
+    auto path = assetName2Path("/textures/", name, ".png");
     if (!m_FS->Exists(path)) {
         spdlog::error("[AssetsManager] File does not exist: {}", name);
         exit(1);

@@ -6,7 +6,7 @@
 
 void DebugRenderer::Init() {
     auto &assets = AssetsManager::GetInstance();
-    m_Program = assets.GetShaderProgram("shaders/debug/basic");
+    m_Program = assets.GetShaderProgram("debug:basic");
 
     assert(m_Program->IsValid());
     m_MaxSize = 2 * 1024;

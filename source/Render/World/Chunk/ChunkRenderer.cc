@@ -2,12 +2,10 @@
 #include "Assets/AssetsManager.hh"
 
 void ChunkRenderer::Init() {
-    // bfore:
-    // m_Program.Load("~/pp/miner/assets/Shaders/Chunk.vert",
-    //                "~/pp/miner/assets/Shaders/Chunk.frag");
-
     auto &assets = AssetsManager::GetInstance();
-    m_Program = assets.GetShaderProgram("shaders/chunk/basic");
+
+    m_Program = assets.GetShaderProgram("chunk:basic");
+    m_Texture = assets.GetTexture("stone");
 
     assert(m_Program->IsValid());
 }
