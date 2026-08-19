@@ -1,31 +1,14 @@
 #include "Render/Debug/DebugRenderer.hh"
+#include "Assets/AssetsManager.hh"
 #include "glm/ext/matrix_clip_space.hpp"
-#include "spdlog/spdlog.h"
 
 #include <glad/gl.h>
 
-static const std::string vertexShader =
-    "#version 450\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec4 aCol;\n"
-    "layout(location = 0) uniform mat4 uVP;\n"
-    "out vec4 vColor;\n"
-    "void main() {\n"
-    "  gl_Position = uVP * vec4(aPos, 1.0);\n"
-    "  vColor = aCol;\n"
-    "}\n"
-    "";
-static const std::string fragmentShader = "#version 450\n"
-                                          "in vec4 vColor;\n"
-                                          "out vec4 fragColor;\n"
-                                          "void main() {\n"
-                                          "   fragColor = vColor;\n"
-                                          "}\n"
-                                          "";
-
 void DebugRenderer::Init() {
-    m_Program.LoadStr(vertexShader, fragmentShader);
-    assert(m_Program.IsValid());
+    auto &assets = AssetsManager::GetInstance();
+    m_Program = &assets.GetShader("shaders/debug/basic");
+
+    assert(m_Program->IsValid());
     m_MaxSize = 2 * 1024;
     glCreateBuffers(1, &m_VBO);
     glCreateVertexArrays(1, &m_VAO);
@@ -69,8 +52,8 @@ void DebugRenderer::Render(Camera &cam, float dt) {
 
     glNamedBufferSubData(m_VBO, 0, sizeof(verts[0]) * verts.size(),
                          verts.data());
-    m_Program.Use();
-    m_Program.SetUniform(0, proj * cam.GetViewMatrix());
+    m_Program->Use();
+    m_Program->SetUniform(0, proj * cam.GetViewMatrix());
     glBindVertexArray(m_VAO);
     glDrawArrays(GL_LINES, 0, verts.size());
 }

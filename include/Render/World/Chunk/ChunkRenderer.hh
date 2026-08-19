@@ -11,14 +11,14 @@
 #include <unordered_map>
 
 class ChunkRenderer : private NonCopyable, private NonMovable {
-public:
-  void Init();
-  void UploadMesh(const ChunkMeshData &mesh);
-  void RemoveMesh(const ChunkPosition &pos);
-  void Render(const Camera &cam);
-  void Destroy();
+  public:
+    void Init();
+    void UploadMesh(const ChunkMeshData &mesh);
+    void RemoveMesh(const ChunkPosition &pos);
+    void Render(const Camera &cam);
+    void Destroy();
 
-private:
-  Shader m_Program;
-  std::unordered_map<ChunkPosition, ChunkMesh> m_Meshes;
+  private:
+    Shader *m_Program;
+    std::unordered_map<ChunkPosition, ChunkMesh> m_Meshes;
 };

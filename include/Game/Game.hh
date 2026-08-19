@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assets/AssetsManager.hh"
 #include "Player/Player.hh"
 #include "Render/Debug/DebugRenderer.hh"
 #include "TaskScheduler.h"

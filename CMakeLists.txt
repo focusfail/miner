@@ -10,6 +10,7 @@ add_subdirectory("./vendor/glm")
 add_subdirectory("./vendor/spdlog")
 add_subdirectory("./vendor/enkiTS")
 add_subdirectory("./vendor/magic_enum")
+add_subdirectory("./vendor/vfspp")
 
 project(
     ${TARGET}
@@ -39,6 +40,7 @@ target_link_libraries(
     glm
     spdlog
     enkiTS
+    vfspp
     magic_enum
 )
 target_compile_definitions(
@@ -46,6 +48,7 @@ target_compile_definitions(
     PRIVATE 
     GLFW_INCLUDE_NONE
     GLM_ENABLE_EXPERIMENTAL
+    GAME_ASSET_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets"
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -56,5 +59,6 @@ target_compile_options(${TARGET} PRIVATE -fsanitize=address,undefined,leak -ggdb
 target_link_options(${TARGET} PRIVATE -fsanitize=address,undefined,leak)
 endif()
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_options(${TARGET} PRIVATE -03)
+target_compile_options(${TARGET} PRIVATE -03)
+target_compile_definitions(${TARGET} PRIVATE RELEASE_BUILD)
 endif()

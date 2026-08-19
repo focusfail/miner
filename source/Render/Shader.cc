@@ -3,22 +3,18 @@
 
 #include <glad/gl.h>
 #include <glm/gtc/type_ptr.hpp>
-#include <spdlog/spdlog.h>
 #include <source_location>
+#include <spdlog/spdlog.h>
 
-Shader::~Shader() {
-    if (m_Program != 0) {
-        glDeleteProgram(m_Program);
-    }
-}
-
-void Shader::Load(const std::string &vFile, const std::string &fFile, std::source_location loc) {
+void Shader::Load(const std::string &vFile, const std::string &fFile,
+                  std::source_location loc) {
     std::string v = ReadFile(vFile);
     std::string f = ReadFile(fFile);
     LoadStr(v, f, loc);
 }
 
-void Shader::LoadStr(const std::string &v, const std::string &f, std::source_location loc) {
+void Shader::LoadStr(const std::string &v, const std::string &f,
+                     std::source_location loc) {
     uint32_t vertexShader = CompileShader(v, GL_VERTEX_SHADER, loc);
     uint32_t fragmentShader = CompileShader(f, GL_FRAGMENT_SHADER, loc);
     uint32_t program = glCreateProgram();
@@ -33,7 +29,8 @@ void Shader::LoadStr(const std::string &v, const std::string &f, std::source_loc
         char log[1024];
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &len);
         glGetProgramInfoLog(program, 1024, &len, log);
-        spdlog::warn("[{}:{}] Failed to link shader program: {}", loc.file_name(), loc.line(), log);
+        spdlog::warn("[{}:{}] Failed to link shader program: {}",
+                     loc.file_name(), loc.line(), log);
         m_Program = 0;
         return;
     }
@@ -42,8 +39,6 @@ void Shader::LoadStr(const std::string &v, const std::string &f, std::source_loc
     glDeleteShader(fragmentShader);
 
     m_Program = program;
-    m_FragmentShaderName = f;
-    m_VertexShaderName = v;
 }
 
 void Shader::Use() { glUseProgram(m_Program); }
@@ -56,7 +51,8 @@ void Shader::SetUniform(uint32_t location, const glm::vec3 &vector) {
     glUniform3fv(location, 1, glm::value_ptr(vector));
 }
 
-uint32_t Shader::CompileShader(const std::string &source, uint32_t type, std::source_location loc) {
+uint32_t Shader::CompileShader(const std::string &source, uint32_t type,
+                               std::source_location loc) {
     uint32_t shader = glCreateShader(type);
     const char *cSource = source.c_str();
     int sourceLen = source.size();
@@ -73,7 +69,8 @@ uint32_t Shader::CompileShader(const std::string &source, uint32_t type, std::so
         glGetShaderInfoLog(shader, 1024, &len, &log[0]);
 
         std::string typeStr = type == GL_VERTEX_SHADER ? "vertex" : "fragment";
-        spdlog::warn("[{}:{}] Failed to compile {} shader: {}", loc.file_name(), loc.line(),typeStr, log);
+        spdlog::warn("[{}:{}] Failed to compile {} shader: {}", loc.file_name(),
+                     loc.line(), typeStr, log);
         return 0;
     }
 

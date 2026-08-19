@@ -1,4 +1,5 @@
 #include "Game/Game.hh"
+#include "Assets/AssetsManager.hh"
 #include "Platform/Input.hh"
 #include "Platform/Keys.hh"
 #include "Render/Camera.hh"
@@ -12,14 +13,17 @@ void Game::Init() {
     spdlog::info("[Game]: Init");
     m_Window = Window::Create("mine", 1920, 1080);
     m_Window->CaptureMouse(true);
-    m_Sched.Initialize();
+
     gladLoaderLoadGL();
     glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
     glEnable(GL_DEPTH_TEST);
     glLineWidth(5.0f);
 
+    AssetsManager::GetInstance().Init();
+    m_Sched.Initialize();
     m_DebugRenderer.Init();
     m_World.Init();
+
     m_Player.SetPosition({8.5, 2, 8.5});
 }
 

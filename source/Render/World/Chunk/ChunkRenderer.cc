@@ -1,10 +1,15 @@
 #include "Render/World/Chunk/ChunkRenderer.hh"
+#include "Assets/AssetsManager.hh"
 
 void ChunkRenderer::Init() {
-    m_Program.Load("~/pp/miner/assets/Shaders/Chunk.vert",
-                   "~/pp/miner/assets/Shaders/Chunk.frag");
+    // bfore:
+    // m_Program.Load("~/pp/miner/assets/Shaders/Chunk.vert",
+    //                "~/pp/miner/assets/Shaders/Chunk.frag");
 
-    assert(m_Program.IsValid());
+    auto &assets = AssetsManager::GetInstance();
+    m_Program = &assets.GetShader("shaders/chunk/basic");
+
+    assert(m_Program->IsValid());
 }
 
 void ChunkRenderer::UploadMesh(const ChunkMeshData &mesh) {
@@ -28,10 +33,10 @@ void ChunkRenderer::Render(const Camera &cam) {
         glm::perspective(glm::radians(75.0f), 1920.0f / 1080.0f, 0.1f, 1000.0f);
     glm::mat4 mvp = proj * cam.GetViewMatrix();
 
-    m_Program.Use();
-    m_Program.SetUniform(0, mvp);
+    m_Program->Use();
+    m_Program->SetUniform(0, mvp);
     for (auto &[pos, mesh] : m_Meshes) {
-        m_Program.SetUniform(1, mesh.position * CHUNK_SIZE);
+        m_Program->SetUniform(1, mesh.position * CHUNK_SIZE);
         mesh.Render();
     }
 }
