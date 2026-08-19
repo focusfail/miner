@@ -1,6 +1,7 @@
 #include "Render/World/Chunk/ChunkMesher.hh"
 #include "Render/World/Chunk/ChunkMesh.hh"
 #include "World/Coordinates.hh"
+#include "spdlog/spdlog.h"
 
 static const std::array<ChunkMeshVertex, 36> blockVertices = {{
     // Front (+Z)
@@ -52,28 +53,30 @@ static const std::array<ChunkMeshVertex, 36> blockVertices = {{
     {{1, 0, 1}, Face::Right}, // Bottom-Left  (Front-Bottom)
 }};
 
-std::array<bool, 6> getShouldCull(const ChunkData &chunk, BlockRegistry &reg,
+std::array<bool, 6> GetShouldCull(const ChunkData &chunk, BlockRegistry &reg,
                                   const BlockPosition &pos) {
-    constexpr glm::uvec3 offs[6] = {
-        {0, 0, 1},  // Front (+Z)
-        {0, 0, -1}, // Back (-Z)
-        {0, 1, 0},  // Top (+Y)
-        {0, -1, 0}, // Bottom (-Y)
-        {-1, 0, 0}, // Left (-X)
-        {1, 0, 0},  // Right (+X)
+    constexpr glm::ivec3 offs[6] = {
+        {0, 0, 1}, {0, 0, -1}, {0, 1, 0}, {0, -1, 0}, {-1, 0, 0}, {1, 0, 0},
     };
 
-    std::array<bool, 6> shouldCull;
+    std::array<bool, 6> shouldCull{};
 
-    for (int i = 0; i < 6; i++) {
-        auto &off = offs[i];
-        auto npos = pos + off;
-        int idx = BlockPos2Idx(npos);
-        if (npos.x < 0 || npos.x >= CHUNK_SIZE || npos.y < 0 ||
-            npos.y >= CHUNK_SIZE || npos.z < 0 || npos.z >= CHUNK_SIZE) {
+    for (int i = 0; i < 6; ++i) {
+        const glm::ivec3 neighbor = glm::ivec3(pos) + offs[i];
+
+        if (neighbor.x < 0 || neighbor.x >= Chunk::Size || neighbor.y < 0 ||
+            neighbor.y >= Chunk::Size || neighbor.z < 0 ||
+            neighbor.z >= Chunk::Size) {
+
             shouldCull[i] = false;
             continue;
         }
+
+        BlockPosition neighborPos(static_cast<uint8_t>(neighbor.x),
+                                  static_cast<uint8_t>(neighbor.y),
+                                  static_cast<uint8_t>(neighbor.z));
+
+        BlockIndex idx = neighborPos.Idx();
 
         Block block = chunk.GetBlock(idx);
         shouldCull[i] = !reg.IsTransparent(block.id);
@@ -97,7 +100,7 @@ ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
                 int vertexIndex = faceVertexIndex + face * 6;
                 const auto &ogVertex = blockVertices[vertexIndex];
                 glm::vec3 newPos =
-                    ogVertex.position * static_cast<float>(CHUNK_SIZE);
+                    ogVertex.position * static_cast<float>(Chunk::Size);
                 mesh.vertices.emplace_back(
                     ChunkMeshVertex{newPos, ogVertex.face});
             }
@@ -108,15 +111,20 @@ ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
 
     mesh.vertices.reserve(blockVertices.size() * 2048);
 
-    for (size_t blockIndex = 0; blockIndex < chunk.blocks->size();
-         blockIndex++) {
-        auto block = chunk.GetBlock(blockIndex);
-        auto pos = BlockIdx2Pos(blockIndex);
-
-        if (reg.IsTransparent(block.id))
+    for (size_t i = 0; i < chunk.blocks->size(); i++) {
+        BlockIndex blockIndex = BlockIndex(i);
+        if (!blockIndex.IsValid())
             continue;
 
-        auto shouldCull = getShouldCull(chunk, reg, pos);
+        auto block = chunk.GetBlock(blockIndex);
+        auto maybePos = blockIndex.Pos();
+
+        if (reg.IsTransparent(block.id) || !maybePos.has_value())
+            continue;
+
+        auto pos = *maybePos;
+
+        auto shouldCull = GetShouldCull(chunk, reg, pos);
         for (int face = 0; face != static_cast<int>(Face::Last); face++) {
             if (shouldCull[face])
                 continue;

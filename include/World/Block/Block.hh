@@ -6,20 +6,20 @@
 using BlockID = uint16_t;
 
 struct BlockDefinition {
-  BlockID id;
+    BlockID id;
 
-  bool solid;
-  bool transparent;
+    bool solid;
+    bool transparent;
 
-  std::string name;
+    std::string name;
 };
 
 struct Block {
-  struct {
-    uint8_t breakStage : 4 = 0;
-    uint8_t dummy : 4 = 0;
-  };
-  BlockID id = 0;
+    struct {
+        uint8_t breakStage : 4 = 0;
+        uint8_t dummy : 4 = 0;
+    };
+    BlockID id = 0;
 };
 
 auto BlockFromID(BlockID id) -> Block;

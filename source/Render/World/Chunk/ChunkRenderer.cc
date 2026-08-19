@@ -36,7 +36,7 @@ void ChunkRenderer::Render(const Camera &cam) {
     m_Program->SetUniform(0, mvp);
 
     for (auto &[pos, mesh] : m_Meshes) {
-        m_Program->SetUniform(1, mesh.position * CHUNK_SIZE);
+        m_Program->SetUniform(1, mesh.position * static_cast<int>(Chunk::Size));
         mesh.Render();
     }
 }

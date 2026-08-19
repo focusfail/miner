@@ -24,7 +24,7 @@ void ChunkData::FillUniform(BlockID type) {
 
 void ChunkData::EnsureMutable() {
     if (!this->blocks) {
-        this->blocks = std::make_unique<std::array<Block, CHUNK_VOLUME>>();
+        this->blocks = std::make_unique<std::array<Block, Chunk::Volume>>();
         this->blocks->fill(BlockFromID(this->uniformType));
     }
 
@@ -32,7 +32,7 @@ void ChunkData::EnsureMutable() {
     this->isDirty = true;
 }
 
-Block ChunkData::GetBlock(int idx) const {
+Block ChunkData::GetBlock(BlockIndex idx) const {
     if (this->isUniform)
         return BlockFromID(this->uniformType);
 
@@ -41,19 +41,37 @@ Block ChunkData::GetBlock(int idx) const {
         return BlockFromID(0);
     }
 
-    assert(idx >= 0 && idx < CHUNK_VOLUME && "Invalid block position");
-    return this->blocks->at(idx);
+    assert(idx.IsValid() && "Invalid block index");
+    return this->blocks->at(idx.get());
 };
 
 Block ChunkData::GetBlock(const BlockPosition &pos) const {
-    int idx = BlockPos2Idx(pos);
+    assert(pos.IsValid() && "Invalid block position");
+    auto idx = pos.Idx();
     return GetBlock(idx);
 };
 
 void ChunkData::SetBlock(const BlockPosition &pos, BlockID blockId) {
     EnsureMutable();
-    int idx = BlockPos2Idx(pos);
-    assert(idx >= 0 && idx < CHUNK_VOLUME && "Invalid block position");
-    this->blocks->at(idx) = BlockFromID(blockId);
+    assert(pos.IsValid() && "Invalid block position");
+    auto idx = pos.Idx();
+    this->blocks->at(idx.get()) = BlockFromID(blockId);
     this->isDirty = true;
+}
+
+void ChunkData::SetBlockBreakStage(const BlockPosition &pos, uint8_t stage) {
+    EnsureMutable();
+    if (!pos.IsValid())
+        return;
+
+    assert(stage < 15 && "Invalid break stage");
+    this->blocks->at(pos.Idx().get()).breakStage = stage;
+}
+
+uint8_t ChunkData::GetBlockBreakStage(const BlockPosition &pos) {
+    if (!pos.IsValid())
+        return 0;
+    if (this->isUniform)
+        return 0;
+    return this->blocks->at(pos.Idx().get()).breakStage;
 }
