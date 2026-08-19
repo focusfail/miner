@@ -21,10 +21,14 @@ class Window : std::enable_shared_from_this<Window>,
     void End();
     bool ShouldClose() const;
 
+    void FitToScreen();
+
     int GetWidth() const;
     int GetHeight() const;
     float GetDeltaTime() const;
 
+
+    void Resize(int w, int h);
     void CaptureMouse(bool shouldCapture);
 
     Input &GetInput();

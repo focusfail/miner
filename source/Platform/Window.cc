@@ -10,13 +10,19 @@ Window::Window(std::string title, int width, int height) {
     }
 
     m_Glfw = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-
+    
     if (!m_Glfw) {
         return;
     }
 
+    float x, y;
+    
     glfwMakeContextCurrent(m_Glfw);
     glfwSetWindowUserPointer(m_Glfw, this);
+    
+    auto mon = glfwGetPrimaryMonitor();
+    glfwGetMonitorContentScale(mon, &x, &y);
+    Resize(width / x, height / y);
     m_Input.Init(m_Glfw);
 }
 
@@ -24,6 +30,17 @@ Window::~Window() {
     glfwDestroyWindow(m_Glfw);
     m_Glfw = nullptr;
     glfwTerminate();
+}
+
+void Window::FitToScreen() {
+    auto mon = glfwGetPrimaryMonitor();
+    int w, h;
+    glfwGetMonitorPhysicalSize(mon, &w, &h);
+    Resize(static_cast<int>(w * 0.9f), static_cast<int>(h * 0.9f));
+}
+
+void Window::Resize(int w, int h) {
+    glfwSetWindowSize(m_Glfw, w, h);
 }
 
 std::shared_ptr<Window> Window::Create(std::string title, int width,
