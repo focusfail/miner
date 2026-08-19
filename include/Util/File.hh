@@ -1,5 +1,6 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
 
-std::string ReadFile(const std::string &filename);
+std::string ReadFile(const std::filesystem::path &filename);
