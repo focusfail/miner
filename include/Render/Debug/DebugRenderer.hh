@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Render/Camera.hh"
-#include "Render/Shader.hh"
+#include "Render/ShaderProgram.hh"
 #include <cstdint>
 
 struct DebugVertex {

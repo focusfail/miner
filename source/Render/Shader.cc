@@ -1,4 +1,4 @@
-#include "Render/Shader.hh"
+#include "Render/ShaderProgram.hh"
 #include "Util/File.hh"
 
 #include <glad/gl.h>
