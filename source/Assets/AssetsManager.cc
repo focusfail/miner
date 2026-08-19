@@ -1,6 +1,7 @@
 #include "Assets/AssetsManager.hh"
 
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 #include <spdlog/spdlog.h>
@@ -59,39 +60,38 @@ void AssetsManager::Init() {
     spdlog::info("[AssetsManager] Mounted filesystem");
 }
 
-auto AssetsManager::GetShader(const std::string &name) -> Shader & {
-    if (!m_Shaders.contains(name)) {
-        if (!m_FS->Exists("/" + name + ".vert") ||
-            !m_FS->Exists("/" + name + ".frag")) {
-            spdlog::error("[AssetsManager] Failed to retrieve shader: {}",
-                          name);
-            exit(1);
-        }
-
-        auto vBuf = m_FS->Read("/" + name + ".vert");
-        auto fBuf = m_FS->Read("/" + name + ".frag");
-
-        for (auto &file : m_FS->vfs->ListAllFiles()) {
-            spdlog::info("{}", file);
-        }
-        spdlog::info("{}", std::string(vBuf.begin(), vBuf.end()));
-
-        if (vBuf.empty() || fBuf.empty()) {
-            spdlog::error("[AssetsManager] Failed to load shader: {}", name);
-            exit(1);
-        }
-
-        Shader s;
-        s.LoadStr(std::string(vBuf.begin(), vBuf.end()),
-                  std::string(fBuf.begin(), fBuf.end()));
-        if (!s.IsValid()) {
-            exit(1);
-        }
-
-        spdlog::info("[AssetsManager] Loaded shader: {}", name);
-        m_Shaders[name] = s;
-        return m_Shaders[name];
+auto AssetsManager::GetShader(const std::string &name) -> Shader * {
+    auto it = m_Shaders.find(name);
+    if (it != m_Shaders.end()) {
+        return it->second.get();
     }
 
-    return m_Shaders[name];
+    if (!m_FS->Exists("/" + name + ".vert") ||
+        !m_FS->Exists("/" + name + ".frag")) {
+        spdlog::error("[AssetsManager] Failed to retrieve shader: {}", name);
+        exit(1);
+    }
+
+    auto vBuf = m_FS->Read("/" + name + ".vert");
+    auto fBuf = m_FS->Read("/" + name + ".frag");
+
+    for (auto &file : m_FS->vfs->ListAllFiles()) {
+        spdlog::info("{}", file);
+    }
+    spdlog::info("{}", std::string(vBuf.begin(), vBuf.end()));
+
+    if (vBuf.empty() || fBuf.empty()) {
+        spdlog::error("[AssetsManager] Failed to load shader: {}", name);
+        exit(1);
+    }
+
+    auto shader = std::make_unique<Shader>();
+    shader->LoadStr(std::string(vBuf.begin(), vBuf.end()),
+                    std::string(fBuf.begin(), fBuf.end()));
+
+    spdlog::info("[AssetsManager] Loaded shader: {}", name);
+    Shader *p = shader.get();
+
+    m_Shaders[name] = std::move(shader);
+    return p;
 }

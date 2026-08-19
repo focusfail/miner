@@ -7,7 +7,7 @@ void ChunkRenderer::Init() {
     //                "~/pp/miner/assets/Shaders/Chunk.frag");
 
     auto &assets = AssetsManager::GetInstance();
-    m_Program = &assets.GetShader("shaders/chunk/basic");
+    m_Program = assets.GetShader("shaders/chunk/basic");
 
     assert(m_Program->IsValid());
 }
