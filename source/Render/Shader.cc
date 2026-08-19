@@ -49,7 +49,7 @@ void ShaderProgram::LoadStr(const std::string &v, const std::string &f,
     m_Program = program;
 }
 
-void ShaderProgram::Use() { glUseProgram(m_Program); }
+void ShaderProgram::Bind() { glUseProgram(m_Program); }
 
 void ShaderProgram::SetUniform(uint32_t location, const glm::mat4 &matrix) {
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
