@@ -14,7 +14,7 @@ class AssetsManager {
 
     void Init();
 
-    auto GetShader(const std::string &name) -> Shader *;
+    Shader *GetShader(const std::string &name);
 
   private:
     AssetsManager();

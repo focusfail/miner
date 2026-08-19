@@ -32,7 +32,7 @@ void ChunkData::EnsureMutable() {
     this->isDirty = true;
 }
 
-auto ChunkData::GetBlock(int idx) const -> Block {
+Block ChunkData::GetBlock(int idx) const {
     if (this->isUniform)
         return BlockFromID(this->uniformType);
 
@@ -45,7 +45,7 @@ auto ChunkData::GetBlock(int idx) const -> Block {
     return this->blocks->at(idx);
 };
 
-auto ChunkData::GetBlock(const BlockPosition &pos) const -> Block {
+Block ChunkData::GetBlock(const BlockPosition &pos) const {
     int idx = BlockPos2Idx(pos);
     return GetBlock(idx);
 };

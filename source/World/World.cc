@@ -42,13 +42,13 @@ void World::Render(const Camera &cam) { m_ChunkRenderer.Render(cam); }
 
 void World::Destroy() { m_ChunkRenderer.Destroy(); }
 
-auto World::TryGetChunkDataByPosition(const ChunkPosition &pos) -> ChunkData * {
+ChunkData *World::TryGetChunkDataByPosition(const ChunkPosition &pos) {
     if (!m_ChunkManager.HasChunk(pos))
         return nullptr;
 
     return &m_ChunkManager.GetChunkDataByPosition(pos);
 }
-auto World::TryGetChunkDataByWorldPosition(glm::vec3 pos) -> ChunkData * {
+ChunkData *World::TryGetChunkDataByWorldPosition(glm::vec3 pos) {
     auto chunkPos = WorldPos2ChunkPos(pos);
     if (!m_ChunkManager.HasChunk(chunkPos))
         return nullptr;
@@ -56,8 +56,7 @@ auto World::TryGetChunkDataByWorldPosition(glm::vec3 pos) -> ChunkData * {
     return &m_ChunkManager.GetChunkDataByPosition(chunkPos);
 }
 
-auto World::CastRay(glm::vec3 start, glm::vec3 end)
-    -> std::optional<HitResult> {
+std::optional<HitResult> World::CastRay(glm::vec3 start, glm::vec3 end) {
     glm::vec3 dir = end - start;
     float maxDist = glm::length(dir);
 

@@ -1,22 +1,21 @@
 #include "World/Coordinates.hh"
 
-auto BlockIdx2Pos(int i) -> BlockPosition {
+BlockPosition BlockIdx2Pos(int i) {
     uint32_t x = i % CHUNK_SIZE;
     uint32_t y = (i / CHUNK_SIZE) % CHUNK_SIZE;
     uint32_t z = i / CHUNK_AREA;
     return {x, y, z};
 }
 
-auto BlockPos2Idx(const BlockPosition &p) -> int {
+int BlockPos2Idx(const BlockPosition &p) {
     return p.x + p.y * CHUNK_SIZE + p.z * CHUNK_AREA;
 }
 
-auto WorldPos2ChunkPos(glm::vec3 p) -> ChunkPosition {
+ChunkPosition WorldPos2ChunkPos(glm::vec3 p) {
     int32_t x = static_cast<int32_t>(std::floor(p.x));
     int32_t y = static_cast<int32_t>(std::floor(p.y));
     int32_t z = static_cast<int32_t>(std::floor(p.z));
 
-    // Proper floor division (handles both positive and negative axes correctly)
     auto floorDiv = [](int32_t coord, int32_t size) -> int32_t {
         return (coord < 0) ? ((coord - size + 1) / size) : (coord / size);
     };
@@ -25,10 +24,8 @@ auto WorldPos2ChunkPos(glm::vec3 p) -> ChunkPosition {
             floorDiv(z, CHUNK_SIZE)};
 }
 
-auto WorldPos2ChunkAndBlock(glm::vec3 p)
-    -> std::pair<ChunkPosition, BlockPosition> {
+std::pair<ChunkPosition, BlockPosition> WorldPos2ChunkAndBlock(glm::vec3 p) {
 
-    // 1. Convert world float positions to exact integer voxel positions
     int32_t x = static_cast<int32_t>(std::floor(p.x));
     int32_t y = static_cast<int32_t>(std::floor(p.y));
     int32_t z = static_cast<int32_t>(std::floor(p.z));
@@ -54,8 +51,8 @@ auto WorldPos2ChunkAndBlock(glm::vec3 p)
     return {chunkPos, blockPos};
 }
 
-auto WorldPos2ChunkAndBlock(int32_t x, int32_t y, int32_t z)
-    -> std::pair<ChunkPosition, BlockPosition> {
+std::pair<ChunkPosition, BlockPosition>
+WorldPos2ChunkAndBlock(int32_t x, int32_t y, int32_t z) {
 
     auto floorDiv = [](int32_t coord, int32_t size) -> int32_t {
         return (coord < 0) ? ((coord - size + 1) / size) : (coord / size);

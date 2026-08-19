@@ -4,13 +4,14 @@ set(TARGET game)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_subdirectory("./vendor/glm")
+add_subdirectory("./vendor/stb")
 add_subdirectory("./vendor/glad")
 add_subdirectory("./vendor/glfw")
-add_subdirectory("./vendor/glm")
+add_subdirectory("./vendor/vfspp")
 add_subdirectory("./vendor/spdlog")
 add_subdirectory("./vendor/enkiTS")
 add_subdirectory("./vendor/magic_enum")
-add_subdirectory("./vendor/vfspp")
 
 project(
     ${TARGET}
@@ -42,6 +43,7 @@ target_link_libraries(
     enkiTS
     vfspp
     magic_enum
+    stb
 )
 target_compile_definitions(
     ${TARGET}

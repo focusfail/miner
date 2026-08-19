@@ -87,6 +87,7 @@ float ResolveAxisMovement(glm::vec3 &position, Capsule &capsule, float delta,
     capsule.position = position;
     return 0.0f;
 }
+
 void Player::Update(float dt, World &world, const Input &input) {
     glm::vec3 inputDir(0.0f);
     if (input.KeyDown(KeyboardKey::W))

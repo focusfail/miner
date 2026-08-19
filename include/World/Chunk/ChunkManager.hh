@@ -8,13 +8,12 @@
 #include <vector>
 
 class ChunkManager {
-public:
-  auto CreateChunk(const ChunkPosition &pos, uint8_t uniformType)
-      -> ChunkData &;
-  auto GetDirtyChunks() -> std::vector<ChunkPosition>;
-  auto GetChunkDataByPosition(const ChunkPosition &pos) -> ChunkData &;
-  auto HasChunk(const ChunkPosition &pos) const -> bool;
+  public:
+    ChunkData &CreateChunk(const ChunkPosition &pos, uint8_t uniformType);
+    std::vector<ChunkPosition> GetDirtyChunks();
+    ChunkData &GetChunkDataByPosition(const ChunkPosition &pos);
+    bool HasChunk(const ChunkPosition &pos) const;
 
-private:
-  std::unordered_map<ChunkPosition, ChunkData> m_Chunks;
+  private:
+    std::unordered_map<ChunkPosition, ChunkData> m_Chunks;
 };

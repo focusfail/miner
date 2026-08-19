@@ -12,25 +12,17 @@ class Camera {
 
     void Init(glm::vec3 position = {0, 0, 0});
     void ProcessMouse(const glm::vec2 delta);
-    void
-    ProcessMovement(bool fwd, bool bwd, bool left, bool right, bool up, bool down, float velocity);
+    void ProcessMovement(bool fwd, bool bwd, bool left, bool right, bool up,
+                         bool down, float velocity);
 
     void SetPosition(glm::vec3 position);
 
-    auto GetWorldUp() const -> glm::vec3 {
-        return m_WorldUp;
-    }
-    auto GetRight() const -> glm::vec3 {
-        return m_Right;
-    }
-    auto GetPosition() const -> glm::vec3 {
-        return m_Position;
-    }
-    auto GetLookDirection() const -> glm::vec3 {
-        return m_Front;
-    }
+    glm::vec3 GetWorldUp() const { return m_WorldUp; }
+    glm::vec3 GetRight() const { return m_Right; }
+    glm::vec3 GetPosition() const { return m_Position; }
+    glm::vec3 GetLookDirection() const { return m_Front; }
 
-    auto GetViewMatrix() const -> glm::mat4;
+    glm::mat4 GetViewMatrix() const;
 
   private:
     void UpdateVectors();

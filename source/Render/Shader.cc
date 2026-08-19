@@ -6,11 +6,19 @@
 #include <source_location>
 #include <spdlog/spdlog.h>
 
+Shader::~Shader() { Unload(); }
+
 void Shader::Load(const std::string &vFile, const std::string &fFile,
                   std::source_location loc) {
     std::string v = ReadFile(vFile);
     std::string f = ReadFile(fFile);
     LoadStr(v, f, loc);
+}
+
+void Shader::Unload() {
+    if (m_Program != 0) {
+        glDeleteProgram(m_Program);
+    }
 }
 
 void Shader::LoadStr(const std::string &v, const std::string &f,

@@ -18,8 +18,8 @@ struct ChunkData {
 
     ChunkData(const ChunkPosition &pos, BlockID uniformType);
 
-    auto GetBlock(const BlockPosition &pos) const -> Block;
-    auto GetBlock(int idx) const -> Block;
+    Block GetBlock(const BlockPosition &pos) const;
+    Block GetBlock(int idx) const;
 
     void SetBlock(const BlockPosition &pos, BlockID block);
 

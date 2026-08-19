@@ -29,13 +29,13 @@ class World : private NonCopyable, private NonMovable {
     void Render(const Camera &cam);
     void Destroy();
 
-    auto CastRay(glm::vec3 start, glm::vec3 end) -> std::optional<HitResult>;
-    auto IsChunkLoaded(const ChunkPosition &pos) -> bool;
-    auto TryGetChunkDataByPosition(const ChunkPosition &pos) -> ChunkData *;
-    auto TryGetChunkDataByWorldPosition(glm::vec3 pos) -> ChunkData *;
-    auto IsBlockSolidAt(const glm::vec3 &pos) -> bool;
+    std::optional<HitResult> CastRay(glm::vec3 start, glm::vec3 end);
+    bool IsChunkLoaded(const ChunkPosition &pos);
+    ChunkData *TryGetChunkDataByPosition(const ChunkPosition &pos);
+    ChunkData *TryGetChunkDataByWorldPosition(glm::vec3 pos);
+    bool IsBlockSolidAt(const glm::vec3 &pos);
 
-    auto GetBlockRegistry() -> BlockRegistry & { return m_BlockRegistry; }
+    BlockRegistry &GetBlockRegistry() { return m_BlockRegistry; }
 
   private:
     ChunkMesher m_ChunkMesher;

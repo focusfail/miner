@@ -38,16 +38,16 @@ class Input {
     void Begin(float dt);
     void End();
 
-    auto KeyPressed(KeyboardKey k) const -> bool;
-    auto KeyReleased(KeyboardKey k) const -> bool;
-    auto KeyDown(KeyboardKey k) const -> bool;
+    bool KeyPressed(KeyboardKey k) const;
+    bool KeyReleased(KeyboardKey k) const;
+    bool KeyDown(KeyboardKey k) const;
 
-    auto MouseButtonPressed(MouseButton b) const -> bool;
-    auto MouseButtonReleased(MouseButton b) const -> bool;
-    auto MouseButtonDown(MouseButton b) const -> bool;
+    bool MouseButtonPressed(MouseButton b) const;
+    bool MouseButtonReleased(MouseButton b) const;
+    bool MouseButtonDown(MouseButton b) const;
 
-    auto GetMousePosition() const -> glm::vec2;
-    auto GetMouseDelta() const -> glm::vec2;
+    glm::vec2 GetMousePosition() const;
+    glm::vec2 GetMouseDelta() const;
 
     void RegisterKeybind(Keybind kb);
 

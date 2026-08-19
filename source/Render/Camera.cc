@@ -20,7 +20,8 @@ void Camera::SetPosition(glm::vec3 position) {
 }
 
 void Camera::ProcessMouse(const glm::vec2 delta) {
-    if (delta == glm::vec2(0, 0)) return;
+    if (delta == glm::vec2(0, 0))
+        return;
 
     const float sens = 0.1;
     m_Yaw += delta.x * sens;
@@ -29,15 +30,8 @@ void Camera::ProcessMouse(const glm::vec2 delta) {
     UpdateVectors();
 }
 
-void Camera::ProcessMovement(
-    bool fwd,
-    bool bwd,
-    bool left,
-    bool right,
-    bool up,
-    bool down,
-    float velocity
-) {
+void Camera::ProcessMovement(bool fwd, bool bwd, bool left, bool right, bool up,
+                             bool down, float velocity) {
     if (fwd) {
         m_Position += m_Front * velocity;
     }
@@ -71,6 +65,6 @@ void Camera::UpdateVectors() {
     m_Up = glm::normalize(glm::cross(m_Right, m_Front));
 }
 
-auto Camera::GetViewMatrix() const -> glm::mat4 {
+glm::mat4 Camera::GetViewMatrix() const {
     return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
 }

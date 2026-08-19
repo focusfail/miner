@@ -120,30 +120,30 @@ void Input::End() {
     m_OldMousePosition = m_NewMousePosition;
 }
 
-auto Input::KeyDown(KeyboardKey k) const -> bool {
+bool Input::KeyDown(KeyboardKey k) const {
     return m_NewKeys[static_cast<size_t>(k)];
 }
 
-auto Input::KeyPressed(KeyboardKey k) const -> bool {
+bool Input::KeyPressed(KeyboardKey k) const {
     return m_NewKeys[static_cast<size_t>(k)] &&
            !m_OldKeys[static_cast<size_t>(k)];
 }
 
-auto Input::KeyReleased(KeyboardKey k) const -> bool {
+bool Input::KeyReleased(KeyboardKey k) const {
     return !m_NewKeys[static_cast<size_t>(k)] &&
            m_OldKeys[static_cast<size_t>(k)];
 }
 
-auto Input::MouseButtonDown(MouseButton b) const -> bool {
+bool Input::MouseButtonDown(MouseButton b) const {
     return m_NewMouse[static_cast<size_t>(b)];
 }
 
-auto Input::MouseButtonPressed(MouseButton b) const -> bool {
+bool Input::MouseButtonPressed(MouseButton b) const {
     return m_NewMouse[static_cast<size_t>(b)] &&
            !m_OldMouse[static_cast<size_t>(b)];
 }
 
-auto Input::MouseButtonReleased(MouseButton b) const -> bool {
+bool Input::MouseButtonReleased(MouseButton b) const {
     return !m_NewMouse[static_cast<size_t>(b)] &&
            m_OldMouse[static_cast<size_t>(b)];
 }
@@ -153,7 +153,7 @@ void Input::RegisterKeybind(Keybind kb) {
     m_Keybinds.emplace_back(kb);
 }
 
-auto Input::GetMousePosition() const -> glm::vec2 { return m_NewMousePosition; }
-auto Input::GetMouseDelta() const -> glm::vec2 {
+glm::vec2 Input::GetMousePosition() const { return m_NewMousePosition; }
+glm::vec2 Input::GetMouseDelta() const {
     return m_NewMousePosition - m_OldMousePosition;
 }

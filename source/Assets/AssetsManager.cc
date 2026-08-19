@@ -60,7 +60,7 @@ void AssetsManager::Init() {
     spdlog::info("[AssetsManager] Mounted filesystem");
 }
 
-auto AssetsManager::GetShader(const std::string &name) -> Shader * {
+Shader *AssetsManager::GetShader(const std::string &name) {
     auto it = m_Shaders.find(name);
     if (it != m_Shaders.end()) {
         return it->second.get();

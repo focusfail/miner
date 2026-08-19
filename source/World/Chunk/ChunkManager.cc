@@ -2,29 +2,28 @@
 
 #include <spdlog/spdlog.h>
 
-auto ChunkManager::CreateChunk(const ChunkPosition &pos, uint8_t uniformType)
-    -> ChunkData & {
-  spdlog::info("[ChunkManager] Created chunk at ({},{},{})", pos.x, pos.y,
-               pos.z);
-  auto [it, inserted] = m_Chunks.try_emplace(pos, pos, uniformType);
-  return it->second;
+ChunkData &ChunkManager::CreateChunk(const ChunkPosition &pos,
+                                     uint8_t uniformType) {
+    spdlog::info("[ChunkManager] Created chunk at ({},{},{})", pos.x, pos.y,
+                 pos.z);
+    auto [it, inserted] = m_Chunks.try_emplace(pos, pos, uniformType);
+    return it->second;
 }
 
-auto ChunkManager::GetDirtyChunks() -> std::vector<ChunkPosition> {
-  std::vector<ChunkPosition> dirty;
-  for (auto &[pos, chunk] : m_Chunks) {
-    if (chunk.isDirty) {
-      dirty.push_back(pos);
+std::vector<ChunkPosition> ChunkManager::GetDirtyChunks() {
+    std::vector<ChunkPosition> dirty;
+    for (auto &[pos, chunk] : m_Chunks) {
+        if (chunk.isDirty) {
+            dirty.push_back(pos);
+        }
     }
-  }
-  return dirty;
+    return dirty;
 }
 
-auto ChunkManager::GetChunkDataByPosition(const ChunkPosition &pos)
-    -> ChunkData & {
-  return m_Chunks.at(pos);
+ChunkData &ChunkManager::GetChunkDataByPosition(const ChunkPosition &pos) {
+    return m_Chunks.at(pos);
 }
 
-auto ChunkManager::HasChunk(const ChunkPosition &pos) const -> bool {
-  return m_Chunks.find(pos) != m_Chunks.end();
+bool ChunkManager::HasChunk(const ChunkPosition &pos) const {
+    return m_Chunks.find(pos) != m_Chunks.end();
 }

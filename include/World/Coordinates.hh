@@ -11,14 +11,13 @@ using ChunkPosition = glm::ivec3;
 using BlockPosition = glm::uvec3;
 
 // Convert a block index in chunk to position in chunk
-auto BlockIdx2Pos(int idx) -> BlockPosition;
-auto BlockPos2Idx(const BlockPosition &pos) -> int;
+BlockPosition BlockIdx2Pos(int idx);
+int BlockPos2Idx(const BlockPosition &pos);
 
-auto WorldPos2ChunkAndBlock(int32_t x, int32_t y, int32_t z)
-    -> std::pair<ChunkPosition, BlockPosition>;
-auto WorldPos2ChunkPos(glm::vec3 position) -> ChunkPosition;
-auto WorldPos2ChunkAndBlock(glm::vec3 p)
-    -> std::pair<ChunkPosition, BlockPosition>;
+ChunkPosition WorldPos2ChunkPos(glm::vec3 position);
+std::pair<ChunkPosition, BlockPosition>
+WorldPos2ChunkAndBlock(int32_t x, int32_t y, int32_t z);
+std::pair<ChunkPosition, BlockPosition> WorldPos2ChunkAndBlock(glm::vec3 p);
 
 enum class Face : uint8_t {
     Front = 0, // +x

@@ -15,21 +15,19 @@ class Player : private NonCopyable, private NonMovable {
     void SetPosition(const glm::vec3 &pos);
 
     void SetFlight(bool enable) { m_Flight = enable; }
-    auto GetFlight() const -> bool { return m_Flight; }
+    bool GetFlight() const { return m_Flight; }
 
-    auto GetCamera() -> Camera & { return m_Camera; }
-    auto GetPosition() const -> glm::vec3 { return m_Position; }
-    auto GetEyePosition() const -> glm::vec3 { return m_Camera.GetPosition(); }
-    auto GetLookDirection() const -> glm::vec3 {
-        return m_Camera.GetLookDirection();
-    }
+    Camera &GetCamera() { return m_Camera; }
+    glm::vec3 GetPosition() const { return m_Position; }
+    glm::vec3 GetEyePosition() const { return m_Camera.GetPosition(); }
+    glm::vec3 GetLookDirection() const { return m_Camera.GetLookDirection(); }
 
-    auto GetViewMatrix() const -> glm::mat4 { return m_Camera.GetViewMatrix(); }
+    glm::mat4 GetViewMatrix() const { return m_Camera.GetViewMatrix(); }
 
   private:
-    auto MoveX(float dist, World &world) -> float;
-    auto MoveY(float dist, World &world) -> float;
-    auto MoveZ(float dist, World &world) -> float;
+    float MoveX(float dist, World &world);
+    float MoveY(float dist, World &world);
+    float MoveZ(float dist, World &world);
 
   private:
     glm::vec3 m_Position{};

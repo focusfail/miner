@@ -52,44 +52,49 @@ static const std::array<ChunkMeshVertex, 36> blockVertices = {{
     {{1, 0, 0}, Face::Right}, // back bottom
 }};
 
-auto ChunkMesher::GenerateMesh(const ChunkData &chunk, BlockRegistry &reg)
-    -> ChunkMeshData {
-  ChunkMeshData mesh;
-  mesh.position = chunk.position;
+ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
+                                        BlockRegistry &reg) {
+    ChunkMeshData mesh;
+    mesh.position = chunk.position;
 
-  if (chunk.isUniform && !reg.IsTransparent(chunk.uniformType)) {
+    if (chunk.isUniform && !reg.IsTransparent(chunk.uniformType)) {
 
-    mesh.vertices.reserve(blockVertices.size());
+        mesh.vertices.reserve(blockVertices.size());
 
-    for (int face = 0; face != static_cast<int>(Face::Last); face++) {
-      for (int faceVertexIndex = 0; faceVertexIndex < 6; faceVertexIndex++) {
-        int vertexIndex = faceVertexIndex + face * 6;
-        const auto &ogVertex = blockVertices[vertexIndex];
-        glm::vec3 newPos = ogVertex.position * static_cast<float>(CHUNK_SIZE);
-        mesh.vertices.emplace_back(ChunkMeshVertex{newPos, ogVertex.face});
-      }
-    }
-  } else {
-    mesh.vertices.reserve(blockVertices.size() * 2048);
-
-    for (size_t blockIndex = 0; blockIndex < chunk.blocks->size();
-         blockIndex++) {
-      auto block = chunk.GetBlock(blockIndex);
-      auto pos = BlockIdx2Pos(blockIndex);
-
-      if (reg.IsTransparent(block.id))
-        continue;
-
-      for (int face = 0; face != static_cast<int>(Face::Last); face++) {
-        for (int faceVertexIndex = 0; faceVertexIndex < 6; faceVertexIndex++) {
-          int vertexIndex = faceVertexIndex + face * 6;
-          const auto &ogVertex = blockVertices[vertexIndex];
-          glm::vec3 newPos = ogVertex.position + glm::vec3(pos);
-          mesh.vertices.emplace_back(ChunkMeshVertex{newPos, ogVertex.face});
+        for (int face = 0; face != static_cast<int>(Face::Last); face++) {
+            for (int faceVertexIndex = 0; faceVertexIndex < 6;
+                 faceVertexIndex++) {
+                int vertexIndex = faceVertexIndex + face * 6;
+                const auto &ogVertex = blockVertices[vertexIndex];
+                glm::vec3 newPos =
+                    ogVertex.position * static_cast<float>(CHUNK_SIZE);
+                mesh.vertices.emplace_back(
+                    ChunkMeshVertex{newPos, ogVertex.face});
+            }
         }
-      }
-    }
-  }
+    } else {
+        mesh.vertices.reserve(blockVertices.size() * 2048);
 
-  return mesh;
+        for (size_t blockIndex = 0; blockIndex < chunk.blocks->size();
+             blockIndex++) {
+            auto block = chunk.GetBlock(blockIndex);
+            auto pos = BlockIdx2Pos(blockIndex);
+
+            if (reg.IsTransparent(block.id))
+                continue;
+
+            for (int face = 0; face != static_cast<int>(Face::Last); face++) {
+                for (int faceVertexIndex = 0; faceVertexIndex < 6;
+                     faceVertexIndex++) {
+                    int vertexIndex = faceVertexIndex + face * 6;
+                    const auto &ogVertex = blockVertices[vertexIndex];
+                    glm::vec3 newPos = ogVertex.position + glm::vec3(pos);
+                    mesh.vertices.emplace_back(
+                        ChunkMeshVertex{newPos, ogVertex.face});
+                }
+            }
+        }
+    }
+
+    return mesh;
 }

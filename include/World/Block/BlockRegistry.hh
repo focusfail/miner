@@ -6,13 +6,13 @@
 #include <vector>
 
 class BlockRegistry : private NonCopyable, private NonMovable {
-public:
-  void Register(const std::string &name, bool solid, bool transparent);
+  public:
+    void Register(const std::string &name, bool solid, bool transparent);
 
-  auto GetName(BlockID id) -> const std::string &;
-  auto IsSolid(BlockID id) -> bool;
-  auto IsTransparent(BlockID id) -> bool;
+    const std::string &GetName(BlockID id);
+    bool IsSolid(BlockID id);
+    bool IsTransparent(BlockID id);
 
-private:
-  std::vector<BlockDefinition> m_Defs;
+  private:
+    std::vector<BlockDefinition> m_Defs;
 };
