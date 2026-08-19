@@ -19,7 +19,7 @@ class ShaderProgram : private NonMovable, private NonCopyable {
                  std::source_location loc = std::source_location::current());
     void Unload();
     bool IsValid() const { return m_Program != 0; }
-    void Use();
+    void Bind();
 
     void SetUniform(uint32_t location, const glm::mat4 &matrix);
     void SetUniform(uint32_t location, const glm::vec3 &vector);
