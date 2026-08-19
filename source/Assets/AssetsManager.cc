@@ -51,6 +51,7 @@ AssetsManager::~AssetsManager() = default;
 
 void AssetsManager::Init() {
     m_FS = std::make_unique<FileSystem>();
+
 #ifdef RELEASE_BUILD
     m_FS->MountArchive("assets.zip", "/");
 #else
@@ -68,30 +69,53 @@ ShaderProgram *AssetsManager::GetShaderProgram(const std::string &name) {
 
     if (!m_FS->Exists("/" + name + ".vert") ||
         !m_FS->Exists("/" + name + ".frag")) {
-        spdlog::error("[AssetsManager] Failed to retrieve shader: {}", name);
+        spdlog::error("[AssetsManager] File does not exist: {}", name);
         exit(1);
     }
 
-    auto vBuf = m_FS->Read("/" + name + ".vert");
-    auto fBuf = m_FS->Read("/" + name + ".frag");
+    auto vertData = m_FS->Read("/" + name + ".vert");
+    auto fragData = m_FS->Read("/" + name + ".frag");
 
-    for (auto &file : m_FS->vfs->ListAllFiles()) {
-        spdlog::info("{}", file);
-    }
-    spdlog::info("{}", std::string(vBuf.begin(), vBuf.end()));
-
-    if (vBuf.empty() || fBuf.empty()) {
+    if (vertData.empty() || fragData.empty()) {
         spdlog::error("[AssetsManager] Failed to load shader: {}", name);
         exit(1);
     }
 
     auto shader = std::make_unique<ShaderProgram>();
-    shader->LoadStr(std::string(vBuf.begin(), vBuf.end()),
-                    std::string(fBuf.begin(), fBuf.end()));
+    shader->LoadStr(std::string(vertData.begin(), vertData.end()),
+                    std::string(fragData.begin(), fragData.end()));
+
+    ShaderProgram *p = shader.get();
+    m_Shaders[name] = std::move(shader);
 
     spdlog::info("[AssetsManager] Loaded shader: {}", name);
-    ShaderProgram *p = shader.get();
+    return p;
+}
 
-    m_Shaders[name] = std::move(shader);
+Texture *AssetsManager::GetTexture(const std::string &name) {
+    auto it = m_Textures.find(name);
+    if (it != m_Textures.end()) {
+        return it->second.get();
+    }
+
+    std::string path = "/" + name + ".png";
+    if (!m_FS->Exists(path)) {
+        spdlog::error("[AssetsManager] File does not exist: {}", name);
+        exit(1);
+    }
+
+    auto texData = m_FS->Read(path);
+    if (texData.empty()) {
+        spdlog::error("[AssetsManager] Failed to load texture: {}", name);
+        exit(1);
+    }
+
+    auto texture = std::make_unique<Texture>();
+    texture->Load(texData);
+
+    Texture *p = texture.get();
+    m_Textures[name] = std::move(texture);
+
+    spdlog::info("[AssetsManager] Loaded texture: {}", name);
     return p;
 }
