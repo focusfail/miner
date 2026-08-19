@@ -3,53 +3,53 @@
 #include "World/Coordinates.hh"
 
 static const std::array<ChunkMeshVertex, 36> blockVertices = {{
-    //  Front (+Z)
-    {{0, 0, 1}, Face::Front}, // bottom left
-    {{1, 0, 1}, Face::Front}, // bottom right
-    {{1, 1, 1}, Face::Front}, // top right
-    {{1, 1, 1}, Face::Front}, // top right
-    {{0, 1, 1}, Face::Front}, // top left
-    {{0, 0, 1}, Face::Front}, // bottom left
+    // Front (+Z)
+    {{0, 0, 1}, Face::Front}, // Bottom-Left
+    {{1, 0, 1}, Face::Front}, // Bottom-Right
+    {{1, 1, 1}, Face::Front}, // Top-Right
+    {{1, 1, 1}, Face::Front}, // Top-Right
+    {{0, 1, 1}, Face::Front}, // Top-Left
+    {{0, 0, 1}, Face::Front}, // Bottom-Left
 
-    //  Back (Z)
-    {{0, 0, 0}, Face::Back}, // bottom left
-    {{0, 1, 0}, Face::Back}, // top left
-    {{1, 1, 0}, Face::Back}, // top right
-    {{1, 1, 0}, Face::Back}, // top right
-    {{1, 0, 0}, Face::Back}, // bottom right
-    {{0, 0, 0}, Face::Back}, // bottom left
+    // Back (-Z)
+    {{1, 0, 0}, Face::Back}, // Bottom-Left
+    {{0, 0, 0}, Face::Back}, // Bottom-Right
+    {{0, 1, 0}, Face::Back}, // Top-Right
+    {{0, 1, 0}, Face::Back}, // Top-Right
+    {{1, 1, 0}, Face::Back}, // Top-Left
+    {{1, 0, 0}, Face::Back}, // Bottom-Left
 
-    //  Top (+Y)
-    {{0, 1, 1}, Face::Top}, // front left
-    {{1, 1, 1}, Face::Top}, // front right
-    {{1, 1, 0}, Face::Top}, // back right
-    {{1, 1, 0}, Face::Top}, // back right
-    {{0, 1, 0}, Face::Top}, // back left
-    {{0, 1, 1}, Face::Top}, // front left
+    // Top (+Y)
+    {{0, 1, 1}, Face::Top}, // Bottom-Left  (Front-Left)
+    {{1, 1, 1}, Face::Top}, // Bottom-Right (Front-Right)
+    {{1, 1, 0}, Face::Top}, // Top-Right    (Back-Right)
+    {{1, 1, 0}, Face::Top}, // Top-Right    (Back-Right)
+    {{0, 1, 0}, Face::Top}, // Top-Left     (Back-Left)
+    {{0, 1, 1}, Face::Top}, // Bottom-Left  (Front-Left)
 
-    //  Bottom (Y)
-    {{0, 0, 0}, Face::Bottom}, // back left
-    {{1, 0, 0}, Face::Bottom}, // back right
-    {{1, 0, 1}, Face::Bottom}, // front right
-    {{1, 0, 1}, Face::Bottom}, // front right
-    {{0, 0, 1}, Face::Bottom}, // front left
-    {{0, 0, 0}, Face::Bottom}, // back left
+    // Bottom (-Y)
+    {{0, 0, 0}, Face::Bottom}, // Bottom-Left  (Back-Left)
+    {{1, 0, 0}, Face::Bottom}, // Bottom-Right (Back-Right)
+    {{1, 0, 1}, Face::Bottom}, // Top-Right    (Front-Right)
+    {{1, 0, 1}, Face::Bottom}, // Top-Right    (Front-Right)
+    {{0, 0, 1}, Face::Bottom}, // Top-Left     (Front-Left)
+    {{0, 0, 0}, Face::Bottom}, // Bottom-Left  (Back-Left)
 
-    //  Left (X)
-    {{0, 0, 0}, Face::Left}, // back bottom
-    {{0, 0, 1}, Face::Left}, // front bottom
-    {{0, 1, 1}, Face::Left}, // front top
-    {{0, 1, 1}, Face::Left}, // front top
-    {{0, 1, 0}, Face::Left}, // back top
-    {{0, 0, 0}, Face::Left}, // back bottom
+    // Left (-X)
+    {{0, 0, 0}, Face::Left}, // Bottom-Left  (Back-Bottom)
+    {{0, 0, 1}, Face::Left}, // Bottom-Right (Front-Bottom)
+    {{0, 1, 1}, Face::Left}, // Top-Right    (Front-Top)
+    {{0, 1, 1}, Face::Left}, // Top-Right    (Front-Top)
+    {{0, 1, 0}, Face::Left}, // Top-Left     (Back-Top)
+    {{0, 0, 0}, Face::Left}, // Bottom-Left  (Back-Bottom)
 
-    //  Right (+X)
-    {{1, 0, 0}, Face::Right}, // back bottom
-    {{1, 1, 0}, Face::Right}, // back top
-    {{1, 1, 1}, Face::Right}, // front top
-    {{1, 1, 1}, Face::Right}, // front top
-    {{1, 0, 1}, Face::Right}, // front bottom
-    {{1, 0, 0}, Face::Right}, // back bottom
+    // Right (+X)
+    {{1, 0, 1}, Face::Right}, // Bottom-Left  (Front-Bottom)
+    {{1, 0, 0}, Face::Right}, // Bottom-Right (Back-Bottom)
+    {{1, 1, 0}, Face::Right}, // Top-Right    (Back-Top)
+    {{1, 1, 0}, Face::Right}, // Top-Right    (Back-Top)
+    {{1, 1, 1}, Face::Right}, // Top-Left     (Front-Top)
+    {{1, 0, 1}, Face::Right}, // Bottom-Left  (Front-Bottom)
 }};
 
 ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
