@@ -13,3 +13,6 @@
 [submodule "vendor/magic_enum"]
 	path = vendor/magic_enum
 	url = https://github.com/Neargye/magic_enum.git
+[submodule "vendor/vfspp"]
+	path = vendor/vfspp
+	url = https://github.com/nextgeniuspro/vfspp.git
