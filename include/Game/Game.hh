@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Assets/AssetsManager.hh"
 #include "Player/Player.hh"
 #include "Render/Debug/DebugRenderer.hh"
 #include "TaskScheduler.h"
-#include <memory>
 
 #include "Platform/Window.hh"
 #include "Util/NonCopyable.hh"
