@@ -29,14 +29,15 @@ void Game::Init() {
 
 void Game::Mainloop() {
     auto &input = m_Window->GetInput();
-    bool poly = false;
 
-    Keybind toggleWireframe{.key = KeyboardKey::F4, .cb = [&poly]() {
-                                glPolygonMode(poly ? GL_FRONT
-                                                   : GL_FRONT_AND_BACK,
-                                              poly ? GL_FILL : GL_LINE);
-                                poly = !poly;
-                            }};
+    Keybind toggleWireframe{
+        .key = KeyboardKey::F4, .cb = [this]() {
+            auto &s = GetDebugState();
+            glPolygonMode(s.drawWireframe ? GL_FRONT : GL_FRONT_AND_BACK,
+                          s.drawWireframe ? GL_FILL : GL_LINE);
+            s.drawWireframe = !s.drawWireframe;
+        }};
+
     Keybind mineBlock{
         .btn = MouseButton::LMB, .cb = [this]() {
             glm::vec3 start = m_Player.GetEyePosition();

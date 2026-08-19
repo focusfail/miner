@@ -11,6 +11,11 @@
 #include "Util/NonMoveable.hh"
 #include "World/World.hh"
 
+struct DebugState {
+    bool drawWireframe = false;
+    bool debugDraw = false;
+};
+
 class Game : private NonCopyable, private NonMovable {
   public:
     static Game &GetInstance() {
@@ -23,11 +28,13 @@ class Game : private NonCopyable, private NonMovable {
     void Shutdown();
 
     std::weak_ptr<Window> GetGameWindow() const;
+    DebugState &GetDebugState() { return m_DebugState; }
 
   private:
     std::shared_ptr<Window> m_Window;
     World m_World;
     Player m_Player;
     DebugRenderer m_DebugRenderer;
+    DebugState m_DebugState;
     enki::TaskScheduler m_Sched;
 };
