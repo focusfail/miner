@@ -10,12 +10,12 @@
 #include <spdlog/spdlog.h>
 
 void Game::Init() {
-    spdlog::info("[Game]: Init");
-    m_Window = Window::Create("mine", 1920, 1080);
-    m_Window->CaptureMouse(true);
+    spdlog::info("[Game] Init");
+    m_Window.Init("mine", 1920, 1080);
+    m_Window.CaptureMouse(true);
 
     gladLoaderLoadGL();
-    glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+    glViewport(0, 0, m_Window.GetWidth(), m_Window.GetHeight());
     glEnable(GL_DEPTH_TEST);
     glLineWidth(5.0f);
 
@@ -28,7 +28,7 @@ void Game::Init() {
 }
 
 void Game::Mainloop() {
-    auto &input = m_Window->GetInput();
+    auto &input = m_Window.GetInput();
 
     Keybind toggleWireframe{
         .key = KeyboardKey::F4, .cb = [this]() {
@@ -65,14 +65,14 @@ void Game::Mainloop() {
     input.RegisterKeybind(doubleTest);
     input.RegisterKeybind(mineBlock);
 
-    while (!m_Window->ShouldClose()) {
-        m_Window->Begin();
-        if (m_Window->IsResized()) {
-            glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+    while (!m_Window.ShouldClose()) {
+        m_Window.Begin();
+        if (m_Window.IsResized()) {
+            glViewport(0, 0, m_Window.GetWidth(), m_Window.GetHeight());
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        float dt = m_Window->GetDeltaTime();
+        float dt = m_Window.GetDeltaTime();
         auto &camera = m_Player.GetCamera();
         m_Player.Update(dt, m_World, input);
         camera.ProcessMouse(input.GetMouseDelta());
@@ -84,8 +84,6 @@ void Game::Mainloop() {
             m_DebugRenderer.Render(camera, dt);
         }
 
-        m_Window->End();
+        m_Window.End();
     }
 }
-
-std::weak_ptr<Window> Game::GetGameWindow() const { return m_Window; }

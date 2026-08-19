@@ -4,29 +4,29 @@
 
 #include <spdlog/spdlog.h>
 
-void Window::ResizeFun(GLFWwindow* glfw, int newX, int newY) {
-    auto window = static_cast<Window*>(glfwGetWindowUserPointer(glfw));
+void Window::ResizeFun(GLFWwindow *glfw, int newX, int newY) {
+    auto window = static_cast<Window *>(glfwGetWindowUserPointer(glfw));
     window->m_IsResized = true;
-} 
+}
 
-Window::Window(std::string title, int width, int height) {
+void Window::Init(std::string title, int width, int height) {
     if (!glfwInit()) {
         return;
     }
 
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
     m_Glfw = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-    
+
     if (!m_Glfw) {
         return;
     }
 
     float x, y;
-    
+
     glfwMakeContextCurrent(m_Glfw);
     glfwSetWindowUserPointer(m_Glfw, this);
     glfwSetWindowSizeCallback(m_Glfw, ResizeFun);
-    
+
     auto mon = glfwGetPrimaryMonitor();
     glfwGetMonitorContentScale(mon, &x, &y);
     Resize(width / x, height / y);
@@ -49,13 +49,6 @@ void Window::FitToScreen() {
 void Window::Resize(int w, int h) {
     glfwSetWindowSize(m_Glfw, w, h);
     m_IsResized = true;
-}
-
-std::shared_ptr<Window> Window::Create(std::string title, int width,
-                                       int height) {
-    auto window =
-        std::shared_ptr<Window>(new Window(std::move(title), width, height));
-    return window;
 }
 
 bool Window::ShouldClose() const {

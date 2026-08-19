@@ -27,11 +27,11 @@ class Game : private NonCopyable, private NonMovable {
     void Mainloop();
     void Shutdown();
 
-    std::weak_ptr<Window> GetGameWindow() const;
+    Window &GetGameWindow() { return m_Window; };
     DebugState &GetDebugState() { return m_DebugState; }
 
   private:
-    std::shared_ptr<Window> m_Window;
+    Window m_Window;
     World m_World;
     Player m_Player;
     DebugRenderer m_DebugRenderer;

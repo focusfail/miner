@@ -13,10 +13,10 @@ class Window : std::enable_shared_from_this<Window>,
                private NonCopyable,
                private NonMovable {
   public:
+    Window() = default;
     ~Window();
 
-    static std::shared_ptr<Window> Create(std::string title, int width,
-                                          int height);
+    void Init(std::string title, int width, int height);
     void Begin();
     void End();
     bool ShouldClose() const;
@@ -36,7 +36,6 @@ class Window : std::enable_shared_from_this<Window>,
     GLFWwindow *GetGlfwWindow() const;
 
   private:
-    Window(std::string title, int width, int height);
     static void ResizeFun(GLFWwindow *glfw, int newX, int newY);
 
     bool m_IsResized = false;
