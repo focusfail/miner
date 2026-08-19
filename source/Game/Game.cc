@@ -37,6 +37,10 @@ void Game::Mainloop() {
                           s.drawWireframe ? GL_FILL : GL_LINE);
             s.drawWireframe = !s.drawWireframe;
         }};
+    Keybind toggleDebugDraw{.key = KeyboardKey::F3, .cb = [this]() {
+                                auto &s = GetDebugState();
+                                s.debugDraw = !s.debugDraw;
+                            }};
 
     Keybind mineBlock{
         .btn = MouseButton::LMB, .cb = [this]() {
@@ -57,6 +61,7 @@ void Game::Mainloop() {
         .cb = [this]() { m_Player.SetFlight(!m_Player.GetFlight()); }};
 
     input.RegisterKeybind(toggleWireframe);
+    input.RegisterKeybind(toggleDebugDraw);
     input.RegisterKeybind(doubleTest);
     input.RegisterKeybind(mineBlock);
 
@@ -74,7 +79,10 @@ void Game::Mainloop() {
 
         m_World.Update();
         m_World.Render(camera);
-        m_DebugRenderer.Render(camera, dt);
+
+        if (m_DebugState.debugDraw) {
+            m_DebugRenderer.Render(camera, dt);
+        }
 
         m_Window->End();
     }
