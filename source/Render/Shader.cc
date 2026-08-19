@@ -4,6 +4,7 @@
 #include <glad/gl.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <spdlog/spdlog.h>
+#include <source_location>
 
 Shader::~Shader() {
     if (m_Program != 0) {
@@ -11,15 +12,15 @@ Shader::~Shader() {
     }
 }
 
-void Shader::Load(const std::string &vFile, const std::string &fFile) {
+void Shader::Load(const std::string &vFile, const std::string &fFile, std::source_location loc) {
     std::string v = ReadFile(vFile);
     std::string f = ReadFile(fFile);
-    LoadStr(v, f);
+    LoadStr(v, f, loc);
 }
 
-void Shader::LoadStr(const std::string &v, const std::string &f) {
-    uint32_t vertexShader = CompileShader(v, GL_VERTEX_SHADER);
-    uint32_t fragmentShader = CompileShader(f, GL_FRAGMENT_SHADER);
+void Shader::LoadStr(const std::string &v, const std::string &f, std::source_location loc) {
+    uint32_t vertexShader = CompileShader(v, GL_VERTEX_SHADER, loc);
+    uint32_t fragmentShader = CompileShader(f, GL_FRAGMENT_SHADER, loc);
     uint32_t program = glCreateProgram();
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
@@ -32,7 +33,9 @@ void Shader::LoadStr(const std::string &v, const std::string &f) {
         char log[1024];
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &len);
         glGetProgramInfoLog(program, 1024, &len, log);
-        spdlog::warn("Failed to link shader program: {}", log);
+        spdlog::warn("[{}:{}] Failed to link shader program: {}", loc.file_name(), loc.line(), log);
+        m_Program = 0;
+        return;
     }
 
     glDeleteShader(vertexShader);
@@ -53,7 +56,7 @@ void Shader::SetUniform(uint32_t location, const glm::vec3 &vector) {
     glUniform3fv(location, 1, glm::value_ptr(vector));
 }
 
-uint32_t Shader::CompileShader(const std::string &source, uint32_t type) {
+uint32_t Shader::CompileShader(const std::string &source, uint32_t type, std::source_location loc) {
     uint32_t shader = glCreateShader(type);
     const char *cSource = source.c_str();
     int sourceLen = source.size();
@@ -68,8 +71,10 @@ uint32_t Shader::CompileShader(const std::string &source, uint32_t type) {
         char log[1024];
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &len);
         glGetShaderInfoLog(shader, 1024, &len, &log[0]);
+
         std::string typeStr = type == GL_VERTEX_SHADER ? "vertex" : "fragment";
-        spdlog::warn("Failed to compile {} shader: {}", typeStr, log);
+        spdlog::warn("[{}:{}] Failed to compile {} shader: {}", loc.file_name(), loc.line(),typeStr, log);
+        return 0;
     }
 
     return shader;
