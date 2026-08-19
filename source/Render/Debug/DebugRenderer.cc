@@ -25,6 +25,7 @@ static const std::string fragmentShader = "#version 450\n"
 
 void DebugRenderer::Init() {
     m_Program.LoadStr(vertexShader, fragmentShader);
+    assert(m_Program.IsValid());
     m_MaxSize = 2 * 1024;
     glCreateBuffers(1, &m_VBO);
     glCreateVertexArrays(1, &m_VAO);
