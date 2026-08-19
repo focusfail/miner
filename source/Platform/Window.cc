@@ -4,11 +4,17 @@
 
 #include <spdlog/spdlog.h>
 
+void Window::ResizeFun(GLFWwindow* glfw, int newX, int newY) {
+    auto window = static_cast<Window*>(glfwGetWindowUserPointer(glfw));
+    window->m_IsResized = true;
+} 
+
 Window::Window(std::string title, int width, int height) {
     if (!glfwInit()) {
         return;
     }
 
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
     m_Glfw = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
     
     if (!m_Glfw) {
@@ -19,6 +25,7 @@ Window::Window(std::string title, int width, int height) {
     
     glfwMakeContextCurrent(m_Glfw);
     glfwSetWindowUserPointer(m_Glfw, this);
+    glfwSetWindowSizeCallback(m_Glfw, ResizeFun);
     
     auto mon = glfwGetPrimaryMonitor();
     glfwGetMonitorContentScale(mon, &x, &y);
@@ -41,6 +48,7 @@ void Window::FitToScreen() {
 
 void Window::Resize(int w, int h) {
     glfwSetWindowSize(m_Glfw, w, h);
+    m_IsResized = true;
 }
 
 std::shared_ptr<Window> Window::Create(std::string title, int width,
@@ -65,6 +73,7 @@ void Window::End() {
     glfwSwapBuffers(m_Glfw);
     m_OldTime = m_NewTime;
     m_Input.End();
+    m_IsResized = false;
 }
 
 int Window::GetWidth() const {

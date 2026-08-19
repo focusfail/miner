@@ -27,6 +27,7 @@ class Window : std::enable_shared_from_this<Window>,
     int GetHeight() const;
     float GetDeltaTime() const;
 
+    auto IsResized() const -> bool { return m_IsResized; }
 
     void Resize(int w, int h);
     void CaptureMouse(bool shouldCapture);
@@ -36,6 +37,9 @@ class Window : std::enable_shared_from_this<Window>,
 
   private:
     Window(std::string title, int width, int height);
+    static void ResizeFun(GLFWwindow* glfw, int newX, int newY);
+
+    bool m_IsResized = false;
 
     double m_OldTime;
     double m_NewTime;

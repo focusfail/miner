@@ -57,6 +57,9 @@ void Game::Mainloop() {
 
     while (!m_Window->ShouldClose()) {
         m_Window->Begin();
+        if (m_Window->IsResized()) {
+            glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+        }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         float dt = m_Window->GetDeltaTime();
