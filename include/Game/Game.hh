@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player/Player.hh"
+#include "Render/BlockOverlayRenderer.hh"
 #include "Render/Debug/DebugRenderer.hh"
 #include "TaskScheduler.h"
 
@@ -39,6 +40,7 @@ class Game : private NonCopyable, private NonMovable {
     World m_World;
     Player m_Player;
     DebugRenderer m_DebugRenderer;
+    BlockOverlayRenderer m_BlockOverlayRenderer;
     DebugState m_DebugState;
     GameState m_GameState;
     enki::TaskScheduler m_Sched;

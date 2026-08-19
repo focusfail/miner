@@ -15,6 +15,7 @@
 struct HitResult {
     ChunkPosition chunkPosition;
     BlockPosition blockPosition;
+    Block block;
     glm::vec3 position;
     glm::vec3 normal;
 };

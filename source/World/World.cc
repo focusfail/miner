@@ -110,6 +110,7 @@ std::optional<HitResult> World::CastRay(glm::vec3 start, glm::vec3 end) {
             result.blockPosition = blockPos;
             result.position = start + (dir * currentDist);
             result.normal = hitNormal;
+            result.block = block;
             return result;
         }
 
