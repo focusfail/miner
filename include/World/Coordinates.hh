@@ -20,11 +20,11 @@ WorldPos2ChunkAndBlock(int32_t x, int32_t y, int32_t z);
 std::pair<ChunkPosition, BlockPosition> WorldPos2ChunkAndBlock(glm::vec3 p);
 
 enum class Face : uint8_t {
-    Front = 0, // +x
-    Back,      // -x
+    Front = 0, // +z
+    Back,      // -z
     Top,       // +y
     Bottom,    // -y
-    Left,      // -z
-    Right,     // +z
+    Left,      // -x
+    Right,     // +x
     Last,
 };

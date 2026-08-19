@@ -52,6 +52,36 @@ static const std::array<ChunkMeshVertex, 36> blockVertices = {{
     {{1, 0, 1}, Face::Right}, // Bottom-Left  (Front-Bottom)
 }};
 
+std::array<bool, 6> getShouldCull(const ChunkData &chunk, BlockRegistry &reg,
+                                  const BlockPosition &pos) {
+    constexpr glm::uvec3 offs[6] = {
+        {0, 0, 1},  // Front (+Z)
+        {0, 0, -1}, // Back (-Z)
+        {0, 1, 0},  // Top (+Y)
+        {0, -1, 0}, // Bottom (-Y)
+        {-1, 0, 0}, // Left (-X)
+        {1, 0, 0},  // Right (+X)
+    };
+
+    std::array<bool, 6> shouldCull;
+
+    for (int i = 0; i < 6; i++) {
+        auto &off = offs[i];
+        auto npos = pos + off;
+        int idx = BlockPos2Idx(npos);
+        if (npos.x < 0 || npos.x >= CHUNK_SIZE || npos.y < 0 ||
+            npos.y >= CHUNK_SIZE || npos.z < 0 || npos.z >= CHUNK_SIZE) {
+            shouldCull[i] = false;
+            continue;
+        }
+
+        Block block = chunk.GetBlock(idx);
+        shouldCull[i] = !reg.IsTransparent(block.id);
+    }
+
+    return shouldCull;
+}
+
 ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
                                         BlockRegistry &reg) {
     ChunkMeshData mesh;
@@ -72,26 +102,32 @@ ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
                     ChunkMeshVertex{newPos, ogVertex.face});
             }
         }
-    } else {
-        mesh.vertices.reserve(blockVertices.size() * 2048);
 
-        for (size_t blockIndex = 0; blockIndex < chunk.blocks->size();
-             blockIndex++) {
-            auto block = chunk.GetBlock(blockIndex);
-            auto pos = BlockIdx2Pos(blockIndex);
+        return mesh;
+    }
 
-            if (reg.IsTransparent(block.id))
+    mesh.vertices.reserve(blockVertices.size() * 2048);
+
+    for (size_t blockIndex = 0; blockIndex < chunk.blocks->size();
+         blockIndex++) {
+        auto block = chunk.GetBlock(blockIndex);
+        auto pos = BlockIdx2Pos(blockIndex);
+
+        if (reg.IsTransparent(block.id))
+            continue;
+
+        auto shouldCull = getShouldCull(chunk, reg, pos);
+        for (int face = 0; face != static_cast<int>(Face::Last); face++) {
+            if (shouldCull[face])
                 continue;
 
-            for (int face = 0; face != static_cast<int>(Face::Last); face++) {
-                for (int faceVertexIndex = 0; faceVertexIndex < 6;
-                     faceVertexIndex++) {
-                    int vertexIndex = faceVertexIndex + face * 6;
-                    const auto &ogVertex = blockVertices[vertexIndex];
-                    glm::vec3 newPos = ogVertex.position + glm::vec3(pos);
-                    mesh.vertices.emplace_back(
-                        ChunkMeshVertex{newPos, ogVertex.face});
-                }
+            for (int faceVertexIndex = 0; faceVertexIndex < 6;
+                 faceVertexIndex++) {
+                int vertexIndex = faceVertexIndex + face * 6;
+                const auto &ogVertex = blockVertices[vertexIndex];
+                glm::vec3 newPos = ogVertex.position + glm::vec3(pos);
+                mesh.vertices.emplace_back(
+                    ChunkMeshVertex{newPos, ogVertex.face});
             }
         }
     }
