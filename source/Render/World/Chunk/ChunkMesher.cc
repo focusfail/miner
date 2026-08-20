@@ -87,6 +87,7 @@ std::array<bool, 6> GetShouldCull(const ChunkData &chunk, BlockRegistry &reg,
 
 ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
                                         BlockRegistry &reg) {
+
     ChunkMeshData mesh;
     mesh.position = chunk.position;
 
@@ -101,8 +102,8 @@ ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
                 const auto &ogVertex = blockVertices[vertexIndex];
                 glm::vec3 newPos =
                     ogVertex.position * static_cast<float>(Chunk::Size);
-                mesh.vertices.emplace_back(
-                    ChunkMeshVertex{newPos, ogVertex.face});
+                mesh.vertices.emplace_back(ChunkMeshVertex{
+                    newPos, ogVertex.face, reg.GetTexture(chunk.uniformType)});
             }
         }
 
@@ -134,8 +135,8 @@ ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
                 int vertexIndex = faceVertexIndex + face * 6;
                 const auto &ogVertex = blockVertices[vertexIndex];
                 glm::vec3 newPos = ogVertex.position + glm::vec3(pos);
-                mesh.vertices.emplace_back(
-                    ChunkMeshVertex{newPos, ogVertex.face});
+                mesh.vertices.emplace_back(ChunkMeshVertex{
+                    newPos, ogVertex.face, reg.GetTexture(block.id)});
             }
         }
     }

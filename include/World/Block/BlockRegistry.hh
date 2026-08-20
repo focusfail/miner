@@ -13,6 +13,7 @@ class BlockRegistry : private NonCopyable, private NonMovable {
     const std::string &GetName(BlockID id);
     bool IsSolid(BlockID id);
     bool IsTransparent(BlockID id);
+    int GetTexture(BlockID id);
 
   private:
     std::vector<BlockDefinition> m_Defs;

@@ -140,9 +140,8 @@ Texture *AssetsManager::GetTexture(const std::string &name) {
 
 std::vector<uint8_t> AssetsManager::GetData(const std::string &path) {
     auto fullPath = assetName2Path("", path, "");
-    if (auto f = m_FS->vfs->OpenFile(fullPath, vfspp::IFile::FileMode::Read)) {
-        std::vector<uint8_t> buf(f->Size());
-        f->Read(buf);
+    if (m_FS->Exists(fullPath)) {
+        auto buf = m_FS->Read(fullPath);
         return buf;
     }
 

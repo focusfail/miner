@@ -14,3 +14,5 @@ bool BlockRegistry::IsSolid(BlockID id) { return m_Defs.at(id).solid; }
 bool BlockRegistry::IsTransparent(BlockID id) {
     return m_Defs.at(id).transparent;
 }
+
+int BlockRegistry::GetTexture(BlockID id) { return m_Defs.at(id).texId; }

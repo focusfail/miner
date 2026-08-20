@@ -5,7 +5,7 @@ void ChunkRenderer::Init() {
     auto &assets = AssetsManager::GetInstance();
 
     m_Program = assets.GetShaderProgram("chunk:textured");
-    m_Texture = assets.GetTexture("block:stone");
+    // m_Texture = assets.GetTexture("block:stone");
 
     assert(m_Program->IsValid());
 }

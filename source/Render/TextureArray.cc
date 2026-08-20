@@ -5,21 +5,21 @@
 #include <stb_image.h>
 
 void TextureArray::Init() {
-    int tSize = 32;
-    int tLayers = 512;
+    int tSize = 16;
+    int tLayers = 16;
 
     m_Width = tSize;
     m_Height = tSize;
 
     glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_Texture);
-    glTextureStorage3D(m_Texture, 4, GL_RGBA8, tSize, tSize, tLayers);
+    glTextureStorage3D(m_Texture, 1, GL_RGBA8, tSize, tSize, tLayers);
     glTextureParameteri(m_Texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTextureParameteri(m_Texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTextureParameteri(m_Texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTextureParameteri(m_Texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
-void TextureArray::Bind() { glBindTexture(GL_TEXTURE_3D, m_Texture); }
+void TextureArray::Bind() { glBindTexture(GL_TEXTURE_2D_ARRAY, m_Texture); }
 
 int TextureArray::AddTexture(const std::string &name) {
     auto &assets = AssetsManager::GetInstance();
@@ -37,12 +37,14 @@ int TextureArray::AddTexture(const std::string &name) {
     if (m_Width < w || m_Height < h) {
         spdlog::warn("[TextureArray] Texture too big to add to array: {}",
                      name);
+        stbi_image_free(data);
         return -1;
     }
 
-    glTextureSubImage3D(m_Texture, 0, 0, 0, 0, m_Width, m_Height, m_NumLayers,
+    glTextureSubImage3D(m_Texture, 0, 0, 0, m_NumLayers, m_Width, m_Height, 1,
                         GL_RGBA, GL_UNSIGNED_BYTE, data);
     stbi_image_free(data);
 
+    spdlog::info("[TextureArray] Added texture ({}): {}", m_NumLayers, name);
     return m_NumLayers++;
 }

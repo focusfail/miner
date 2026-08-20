@@ -1,9 +1,11 @@
 #pragma once
+#include "Util/NonCopyable.hh"
+#include "Util/NonMoveable.hh"
 #include <cstdint>
 
 #include <string>
 
-class TextureArray {
+class TextureArray : private NonCopyable, private NonMovable {
   public:
     void Init();
     void Bind();

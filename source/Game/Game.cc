@@ -9,8 +9,6 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
-implement face buffer object for per-face texture
-
 void Game::Init() {
     spdlog::info("[Game] Init");
     m_Window.Init("mine", 1920, 1080);

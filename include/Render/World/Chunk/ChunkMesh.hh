@@ -8,6 +8,7 @@
 struct ChunkMeshVertex {
     glm::vec3 position;
     Face face;
+    int texId;
 };
 
 struct ChunkMeshData {
