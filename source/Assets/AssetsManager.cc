@@ -70,7 +70,10 @@ void AssetsManager::Init() {
     m_FS->MountNative(GAME_ASSET_PATH, "/");
 #endif
 
-    spdlog::info("[AssetsManager] Mounted filesystem");
+    spdlog::info("[AssetsManager] Mounted filesystem {}", GAME_ASSET_PATH);
+    for (auto& f : m_FS->vfs->ListAllFiles()) {
+        spdlog::info("{}", f);
+    }
 }
 
 ShaderProgram *AssetsManager::GetShaderProgram(const std::string &name) {

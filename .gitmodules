@@ -15,4 +15,4 @@
 	url = https://github.com/Neargye/magic_enum.git
 [submodule "vendor/vfspp"]
 	path = vendor/vfspp
-	url = https://github.com/nextgeniuspro/vfspp.git
+	url = https://github.com/focusfail/vfspp.git
