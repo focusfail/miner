@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Render/Camera.hh"
+#include "Render/TextureArray.hh"
 #include "Render/World/Chunk/ChunkMesher.hh"
 #include "Render/World/Chunk/ChunkRenderer.hh"
 #include "World/Block/Block.hh"
@@ -43,4 +44,5 @@ class World : private NonCopyable, private NonMovable {
     ChunkManager m_ChunkManager;
     ChunkRenderer m_ChunkRenderer;
     BlockRegistry m_BlockRegistry;
+    TextureArray m_BlockTextures;
 };

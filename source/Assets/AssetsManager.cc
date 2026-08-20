@@ -1,5 +1,7 @@
 #include "Assets/AssetsManager.hh"
+#include "vfspp/IFile.h"
 
+#include <cstdint>
 #include <memory>
 #include <type_traits>
 #include <vector>
@@ -71,7 +73,7 @@ void AssetsManager::Init() {
 #endif
 
     spdlog::info("[AssetsManager] Mounted filesystem {}", GAME_ASSET_PATH);
-    for (auto& f : m_FS->vfs->ListAllFiles()) {
+    for (auto &f : m_FS->vfs->ListAllFiles()) {
         spdlog::info("{}", f);
     }
 }
@@ -134,4 +136,15 @@ Texture *AssetsManager::GetTexture(const std::string &name) {
 
     spdlog::info("[AssetsManager] Loaded texture: {}", name);
     return p;
+}
+
+std::vector<uint8_t> AssetsManager::GetData(const std::string &path) {
+    auto fullPath = assetName2Path("", path, "");
+    if (auto f = m_FS->vfs->OpenFile(fullPath, vfspp::IFile::FileMode::Read)) {
+        std::vector<uint8_t> buf(f->Size());
+        f->Read(buf);
+        return buf;
+    }
+
+    return {};
 }

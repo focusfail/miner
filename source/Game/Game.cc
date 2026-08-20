@@ -7,8 +7,9 @@
 #include "World/Coordinates.hh"
 #include "World/World.hh"
 #include <glad/gl.h>
-#include <memory>
 #include <spdlog/spdlog.h>
+
+implement face buffer object for per-face texture
 
 void Game::Init() {
     spdlog::info("[Game] Init");

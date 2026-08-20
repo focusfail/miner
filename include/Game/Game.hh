@@ -3,6 +3,7 @@
 #include "Player/Player.hh"
 #include "Render/BlockOverlayRenderer.hh"
 #include "Render/Debug/DebugRenderer.hh"
+#include "Render/TextureArray.hh"
 #include "TaskScheduler.h"
 
 #include "Platform/Window.hh"

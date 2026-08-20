@@ -7,7 +7,8 @@
 
 class BlockRegistry : private NonCopyable, private NonMovable {
   public:
-    void Register(const std::string &name, bool solid, bool transparent);
+    void Register(const std::string &name, bool solid, bool transparent,
+                  int texId);
 
     const std::string &GetName(BlockID id);
     bool IsSolid(BlockID id);

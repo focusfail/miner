@@ -8,6 +8,8 @@ using BlockID = uint16_t;
 struct BlockDefinition {
     BlockID id;
 
+    int texId;
+
     bool solid;
     bool transparent;
 

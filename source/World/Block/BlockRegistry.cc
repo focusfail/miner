@@ -2,8 +2,8 @@
 #include "World/Block/Block.hh"
 
 void BlockRegistry::Register(const std::string &name, bool solid,
-                             bool transparent) {
-    m_Defs.emplace_back(m_Defs.size(), solid, transparent, name);
+                             bool transparent, int texId) {
+    m_Defs.emplace_back(m_Defs.size(), texId, solid, transparent, name);
 }
 
 const std::string &BlockRegistry::GetName(BlockID id) {

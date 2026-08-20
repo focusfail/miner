@@ -15,6 +15,7 @@ class AssetsManager {
 
     void Init();
 
+    std::vector<uint8_t> GetData(const std::string &path);
     ShaderProgram *GetShaderProgram(const std::string &name);
     Texture *GetTexture(const std::string &name);
 

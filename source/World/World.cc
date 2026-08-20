@@ -8,6 +8,8 @@
 void World::Init() {
     m_ChunkRenderer.Init();
 
+    m_BlockTextures.Init();
+
     m_ChunkManager.CreateChunk(ChunkPosition{0, 0, 0}, 0);
     m_ChunkManager.CreateChunk(ChunkPosition{0, 0, 1}, 1);
     m_ChunkManager.CreateChunk(ChunkPosition{0, 0, -1}, 1);
@@ -19,8 +21,12 @@ void World::Init() {
         m_ChunkManager.CreateChunk(ChunkPosition{0, -i, 0}, 1);
     }
 
-    m_BlockRegistry.Register("air", false, true);
-    m_BlockRegistry.Register("stone", true, false);
+    {
+        auto &t = m_BlockTextures;
+        auto &b = m_BlockRegistry;
+        b.Register("air", false, true, -1);
+        b.Register("stone", true, false, t.AddTexture("block:stone"));
+    }
 }
 
 void World::Update() {
