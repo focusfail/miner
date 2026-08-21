@@ -22,7 +22,7 @@ struct HitResult {
 };
 
 class World : private NonCopyable, private NonMovable {
-  public:
+public:
     World() = default;
     ~World() = default;
 
@@ -33,13 +33,13 @@ class World : private NonCopyable, private NonMovable {
 
     std::optional<HitResult> CastRay(glm::vec3 start, glm::vec3 end);
     bool IsChunkLoaded(const ChunkPosition &pos);
-    ChunkData *TryGetChunkDataByPosition(const ChunkPosition &pos);
-    ChunkData *TryGetChunkDataByWorldPosition(glm::vec3 pos);
+    ChunkInfo *TryGetChunkDataByPosition(const ChunkPosition &pos);
+    ChunkInfo *TryGetChunkDataByWorldPosition(glm::vec3 pos);
     bool IsBlockSolidAt(const glm::vec3 &pos);
 
     BlockRegistry &GetBlockRegistry() { return m_BlockRegistry; }
 
-  private:
+private:
     ChunkMesher m_ChunkMesher;
     ChunkManager m_ChunkManager;
     ChunkRenderer m_ChunkRenderer;

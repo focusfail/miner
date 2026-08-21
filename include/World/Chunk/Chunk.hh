@@ -9,14 +9,14 @@
 
 using ChunkBlockArray = std::unique_ptr<std::array<Block, Chunk::Volume>>;
 
-struct ChunkData {
+struct ChunkInfo {
     bool isDirty = false;
     bool isUniform = true;
     BlockID uniformType{};
     ChunkPosition position{};
     ChunkBlockArray blocks{};
 
-    ChunkData(const ChunkPosition &pos, BlockID uniformType);
+    ChunkInfo(const ChunkPosition &pos, BlockID uniformType);
 
     Block GetBlock(const BlockPosition &pos) const;
     Block GetBlock(BlockIndex idx) const;

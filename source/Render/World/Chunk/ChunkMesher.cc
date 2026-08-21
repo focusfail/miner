@@ -53,7 +53,7 @@ static const std::array<ChunkMeshVertex, 36> blockVertices = {{
     {{1, 0, 1}, Face::Right}, // Bottom-Left  (Front-Bottom)
 }};
 
-std::array<bool, 6> GetShouldCull(const ChunkData &chunk, BlockRegistry &reg,
+std::array<bool, 6> GetShouldCull(const ChunkInfo &chunk, BlockRegistry &reg,
                                   const BlockPosition &pos) {
     constexpr glm::ivec3 offs[6] = {
         {0, 0, 1}, {0, 0, -1}, {0, 1, 0}, {0, -1, 0}, {-1, 0, 0}, {1, 0, 0},
@@ -85,7 +85,7 @@ std::array<bool, 6> GetShouldCull(const ChunkData &chunk, BlockRegistry &reg,
     return shouldCull;
 }
 
-ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
+ChunkMeshData ChunkMesher::GenerateMesh(const ChunkInfo &chunk,
                                         BlockRegistry &reg) {
 
     ChunkMeshData mesh;
@@ -114,21 +114,18 @@ ChunkMeshData ChunkMesher::GenerateMesh(const ChunkData &chunk,
 
     for (size_t i = 0; i < chunk.blocks->size(); i++) {
         BlockIndex blockIndex = BlockIndex(i);
-        if (!blockIndex.IsValid())
-            continue;
+        if (!blockIndex.IsValid()) continue;
 
         auto block = chunk.GetBlock(blockIndex);
         auto maybePos = blockIndex.Pos();
 
-        if (reg.IsTransparent(block.id) || !maybePos.has_value())
-            continue;
+        if (reg.IsTransparent(block.id) || !maybePos.has_value()) continue;
 
         auto pos = *maybePos;
 
         auto shouldCull = GetShouldCull(chunk, reg, pos);
         for (int face = 0; face != static_cast<int>(Face::Last); face++) {
-            if (shouldCull[face])
-                continue;
+            if (shouldCull[face]) continue;
 
             for (int faceVertexIndex = 0; faceVertexIndex < 6;
                  faceVertexIndex++) {

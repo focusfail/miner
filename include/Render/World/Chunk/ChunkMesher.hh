@@ -5,9 +5,9 @@
 #include "World/Chunk/Chunk.hh"
 
 class ChunkMesher {
-  public:
+public:
     ChunkMesher() = default;
     ~ChunkMesher() = default;
 
-    ChunkMeshData GenerateMesh(const ChunkData &chunk, BlockRegistry &reg);
+    ChunkMeshData GenerateMesh(const ChunkInfo &chunk, BlockRegistry &reg);
 };

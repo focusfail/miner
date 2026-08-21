@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Render/Camera.hh"
+#include "Render/GpuPool.hh"
 #include "Render/ShaderProgram.hh"
 #include "Render/TextureArray.hh"
 #include "Render/World/Chunk/ChunkMesh.hh"
@@ -12,7 +13,7 @@
 #include <unordered_map>
 
 class ChunkRenderer : private NonCopyable, private NonMovable {
-  public:
+public:
     void Init();
     void UploadMesh(const ChunkMeshData &mesh);
     void RemoveMesh(const ChunkPosition &pos);
@@ -21,7 +22,7 @@ class ChunkRenderer : private NonCopyable, private NonMovable {
 
     void SetTextureArray(TextureArray *ta) { m_Texture = ta; }
 
-  private:
+private:
     ShaderProgram *m_Program;
     TextureArray *m_Texture;
     std::unordered_map<ChunkPosition, ChunkMesh> m_Meshes;

@@ -33,7 +33,7 @@ void World::Init() {
 void World::Update() {
     auto dirty = m_ChunkManager.GetDirtyChunks();
     for (const auto &pos : dirty) {
-        ChunkData &chunk = m_ChunkManager.GetChunkDataByPosition(pos);
+        ChunkInfo &chunk = m_ChunkManager.GetChunkDataByPosition(pos);
         ChunkMeshData meshData =
             m_ChunkMesher.GenerateMesh(chunk, m_BlockRegistry);
         m_ChunkRenderer.UploadMesh(meshData);
@@ -49,16 +49,14 @@ void World::Render(const Camera &cam) { m_ChunkRenderer.Render(cam); }
 
 void World::Destroy() { m_ChunkRenderer.Destroy(); }
 
-ChunkData *World::TryGetChunkDataByPosition(const ChunkPosition &pos) {
-    if (!m_ChunkManager.HasChunk(pos))
-        return nullptr;
+ChunkInfo *World::TryGetChunkDataByPosition(const ChunkPosition &pos) {
+    if (!m_ChunkManager.HasChunk(pos)) return nullptr;
 
     return &m_ChunkManager.GetChunkDataByPosition(pos);
 }
-ChunkData *World::TryGetChunkDataByWorldPosition(glm::vec3 pos) {
+ChunkInfo *World::TryGetChunkDataByWorldPosition(glm::vec3 pos) {
     auto chunkPos = WorldPos2ChunkPos(pos);
-    if (!m_ChunkManager.HasChunk(chunkPos))
-        return nullptr;
+    if (!m_ChunkManager.HasChunk(chunkPos)) return nullptr;
 
     return &m_ChunkManager.GetChunkDataByPosition(chunkPos);
 }
@@ -157,9 +155,8 @@ auto World::IsChunkLoaded(const ChunkPosition &pos) -> bool {
 
 auto World::IsBlockSolidAt(const glm::vec3 &worldPos) -> bool {
     auto [chunkPos, blockPos] = WorldPos2ChunkAndBlock(worldPos);
-    ChunkData *chunk = TryGetChunkDataByPosition(chunkPos);
-    if (!chunk)
-        return false;
+    ChunkInfo *chunk = TryGetChunkDataByPosition(chunkPos);
+    if (!chunk) return false;
 
     Block block = chunk->GetBlock(blockPos);
     return m_BlockRegistry.IsSolid(block.id);

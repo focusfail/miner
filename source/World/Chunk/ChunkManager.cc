@@ -2,7 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
-ChunkData &ChunkManager::CreateChunk(const ChunkPosition &pos,
+ChunkInfo &ChunkManager::CreateChunk(const ChunkPosition &pos,
                                      uint8_t uniformType) {
     spdlog::info("[ChunkManager] Created chunk at ({},{},{})", pos.x, pos.y,
                  pos.z);
@@ -20,7 +20,7 @@ std::vector<ChunkPosition> ChunkManager::GetDirtyChunks() {
     return dirty;
 }
 
-ChunkData &ChunkManager::GetChunkDataByPosition(const ChunkPosition &pos) {
+ChunkInfo &ChunkManager::GetChunkDataByPosition(const ChunkPosition &pos) {
     return m_Chunks.at(pos);
 }
 
