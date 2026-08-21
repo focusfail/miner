@@ -6,7 +6,7 @@
 #include <string>
 
 class TextureArray : private NonCopyable, private NonMovable {
-  public:
+public:
     void Init();
     void Bind();
 
@@ -17,7 +17,7 @@ class TextureArray : private NonCopyable, private NonMovable {
     int GetNumLayers() const { return m_NumLayers; }
     int GetMaxLayers() const { return m_MaxLayers; }
 
-  private:
+private:
     uint32_t m_Texture = 0;
     int m_Width = 0;
     int m_Height = 0;
