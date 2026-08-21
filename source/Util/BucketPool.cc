@@ -1,43 +1,49 @@
 #include "Util/BucketPool.hh"
+#include <algorithm>
 #include <optional>
 
-BucketPool::BucketPool(std::vector<uint32_t> sizes, uint32_t slots) {
-    m_Buckets.resize(sizes.size());
+void BucketPool::Init(std::vector<BucketDef> bucketDefs) {
+    std::sort(
+        bucketDefs.begin(), bucketDefs.end(),
+        [](const BucketDef &a, const BucketDef &b) { return a.size < b.size; });
 
-    uint32_t offset = 0;
-    for (size_t i = 0; i < m_BucketSizes.size(); i++) {
+    m_Buckets.resize(bucketDefs.size());
+
+    size_t offset = 0;
+    for (size_t i = 0; i < m_Buckets.size(); i++) {
         auto &b = m_Buckets[i];
-        b.slotSize = sizes[i];
+        b.slotSize = bucketDefs[i].size;
         b.baseOffset = offset;
 
-        for (uint32_t j = 0; j < slots; j++) {
+        for (size_t j = 0; j < bucketDefs[i].count; j++) {
             b.freeSlots.push_back(j);
         }
-        offset += b.slotSize * slots;
+        offset += b.slotSize * bucketDefs[i].count;
     }
+
+    m_Capacity = offset;
 }
 
-std::optional<BucketPool::Slot> BucketPool::Allocate(uint32_t size) {
+std::optional<BucketPool::Slot> BucketPool::Allocate(size_t size) {
     int idx = PickBucket(size);
     if (idx < 0) return std::nullopt;
 
     auto &b = m_Buckets[idx];
     if (b.freeSlots.empty()) return std::nullopt;
-    uint32_t slot = b.freeSlots.back();
+    size_t slot = b.freeSlots.back();
     b.freeSlots.pop_back();
 
-    return Slot{b.baseOffset + slot * b.slotSize, b.slotSize, idx};
+    return Slot{b.baseOffset + slot * b.slotSize, b.slotSize, idx,
+                static_cast<int>(slot)};
 }
 
 void BucketPool::Free(Slot s) {
-    m_Buckets[s.bucketIdx].freeSlots.push_back(
-        (s.offset - m_Buckets[s.bucketIdx].baseOffset) /
-        m_Buckets[s.bucketIdx].slotSize);
+    m_Buckets[s.bucketIdx].freeSlots.push_back(s.slotIdx);
 }
 
-int BucketPool::PickBucket(uint32_t size) {
-    for (size_t i = 0; i < m_BucketSizes.size(); i++) {
-        if (m_BucketSizes[i] >= size) return static_cast<int>(i);
+int BucketPool::PickBucket(size_t size) {
+    for (size_t i = 0; i < m_Buckets.size(); i++) {
+        if (m_Buckets[i].slotSize >= size) return static_cast<int>(i);
     }
 
     return -1;
