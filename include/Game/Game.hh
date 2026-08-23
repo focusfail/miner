@@ -9,6 +9,7 @@
 #include "Util/NonCopyable.hh"
 #include "Util/NonMoveable.hh"
 #include "World/World.hh"
+#include <optional>
 
 struct DebugState {
     bool drawWireframe = false;
@@ -20,6 +21,7 @@ struct GameState {
     float blockMineTimeout = 0.05f;
     float blockMineTimer = 0.0f;
     float reach = 4.0f;
+    std::optional<HitResult> inReachBlock = std::nullopt;
 };
 
 class Game : private NonCopyable, private NonMovable {

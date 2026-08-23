@@ -112,14 +112,16 @@ std::optional<HitResult> World::CastRay(glm::vec3 start, glm::vec3 end) {
         auto [chunkPos, blockPos] = WorldPos2ChunkAndBlock(x, y, z);
 
         BlockInfo block{};
-        if (auto chunk = TryGetChunk(chunkPos)) {
+        Chunk *chunk = nullptr;
+        if ((chunk = TryGetChunk(chunkPos))) {
             block = chunk->GetBlock(blockPos);
         }
 
         if (block.solid) {
             HitResult result;
             result.chunkPos = chunkPos;
-            result.blockPosition = blockPos;
+            result.chunk = chunk;
+            result.blockPos = blockPos;
             result.position = start + (dir * currentDist);
             result.normal = hitNormal;
             result.block = block;

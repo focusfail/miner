@@ -8,7 +8,7 @@
 
 struct ChunkMeshVertex {
     glm::vec3 position;
-    float light = 1.0f / 15.0f;
+    float light = 4.0f / 15.0f;
 };
 
 struct alignas(8) ChunkMeshFace {

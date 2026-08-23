@@ -15,6 +15,7 @@
 #include <optional>
 
 struct HitResult {
+    Chunk *chunk;
     ChunkPosition chunkPos;
     BlockPosition blockPosition;
     BlockInfo block;

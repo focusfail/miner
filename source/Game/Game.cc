@@ -8,6 +8,7 @@
 #include "World/Coordinates.hh"
 #include "World/World.hh"
 #include <glad/gl.h>
+#include <optional>
 #include <spdlog/spdlog.h>
 
 #define NANOVG_GL3_IMPLEMENTATION
@@ -54,9 +55,9 @@ void Game::Mainloop() {
     }};
 
     Keybind mineBlock{.btn = MouseButton::LMB, .trigger = InputTrigger::CONTINUOS, .cb = [this]() {
-        glm::vec3 start = m_Player.GetEyePosition();
-        glm::vec3 end = start + m_Player.GetLookDirection() * m_GameState.reach;
-        if (auto hit = m_World.CastRay(start, end)) {
+        auto &hit = m_GameState.inReachBlock;
+
+        if (hit.has_value()) {
             if (m_GameState.blockMineTimer < m_GameState.blockMineTimeout) {
                 m_GameState.blockMineTimer += m_Window.GetDeltaTime();
                 return;
@@ -64,39 +65,28 @@ void Game::Mainloop() {
             m_GameState.blockMineTimer = 0.0f;
 
             if (auto chunk = m_World.TryGetChunk(hit->chunkPos)) {
-                chunk->SetBlockBreakStage(hit->blockPosition,
-                    chunk->GetBlockBreakStage(hit->blockPosition) + m_GameState.blockBreakStagesPerMine);
+                chunk->SetBlockBreakStage(
+                    hit->blockPos, chunk->GetBlockBreakStage(hit->blockPos) + m_GameState.blockBreakStagesPerMine);
             }
-            m_DebugRenderer.DrawLine(start, hit->position, 1.0f);
         }
     }};
 
+    Keybind placeTorch{.btn = MouseButton::MMB, .cb = [this]() {
+        auto &hit = m_GameState.inReachBlock;
+        if (hit.has_value()) {
+            if (auto chunk = m_World.TryGetChunk(hit->chunkPos)) {
+                auto b = chunk->GetBlockRaw(hit->blockPos);
+                b.lightEmit = 7;
+                chunk->SetBlock(hit->blockPos, b);
+            }
+        }
+    }};
     Keybind placeBlock{.btn = MouseButton::RMB, .cb = [this]() {
-        glm::vec3 start = m_Player.GetEyePosition();
-        glm::vec3 end = start + m_Player.GetLookDirection() * m_GameState.reach;
-        if (auto hit = m_World.CastRay(start, end)) {
-            auto worldPos = glm::vec3(hit->chunkPos) * static_cast<float>(ChunkDim::Size) +
-                            glm::vec3(hit->blockPosition) + hit->normal;
-            auto [chunkPos, blockPos] = WorldPos2ChunkAndBlock(worldPos);
-            glm::vec3 minA, maxA, minB, maxB;
-            blockPos.GetAABB(minA, maxA);
-            m_Player.GetAABB(minB, maxB);
+        auto &hit = m_GameState.inReachBlock;
 
-            auto chunk = m_World.TryGetChunk(chunkPos);
-            if (!AABBIntersects(minA, maxA, minB, maxB) && chunk) {
-                chunk->SetBlock(
-                    blockPos, {.id = BlockRegistry::GetInstance().GetBlockIDByName("stone"), .lightEmit = 7});
-                spdlog::info("Placed block at C({},{},{}) B({},{},{})", chunkPos.x, chunkPos.y, chunkPos.z,
-                    blockPos.v.x, blockPos.v.y, blockPos.v.z);
-            }
-        }
-    }};
-    Keybind placeBlockB{.btn = MouseButton::MMB, .cb = [this]() {
-        glm::vec3 start = m_Player.GetEyePosition();
-        glm::vec3 end = start + m_Player.GetLookDirection() * m_GameState.reach;
-        if (auto hit = m_World.CastRay(start, end)) {
-            auto worldPos = glm::vec3(hit->chunkPos) * static_cast<float>(ChunkDim::Size) +
-                            glm::vec3(hit->blockPosition) + hit->normal;
+        if (hit.has_value()) {
+            auto worldPos =
+                glm::vec3(hit->chunkPos) * static_cast<float>(ChunkDim::Size) + glm::vec3(hit->blockPos) + hit->normal;
             auto [chunkPos, blockPos] = WorldPos2ChunkAndBlock(worldPos);
             glm::vec3 minA, maxA, minB, maxB;
             blockPos.GetAABB(minA, maxA);
@@ -111,16 +101,18 @@ void Game::Mainloop() {
         }
     }};
 
-    Keybind doubleTest{.key = KeyboardKey::SPACE, .trigger = InputTrigger::DOUBLE, .cb = [this]() {
+    Keybind toggleFly{.key = KeyboardKey::SPACE, .trigger = InputTrigger::DOUBLE, .cb = [this]() {
         m_Player.SetFlight(!m_Player.GetFlight());
     }};
 
     input.RegisterKeybind(toggleWireframe);
     input.RegisterKeybind(toggleDebugDraw);
-    input.RegisterKeybind(doubleTest);
+    input.RegisterKeybind(toggleFly);
     input.RegisterKeybind(mineBlock);
+    input.RegisterKeybind(placeTorch);
     input.RegisterKeybind(placeBlock);
-    input.RegisterKeybind(placeBlockB);
+
+    int font = nvgCreateFont(vg, "roboto", "/home/focus/Downloads/Roboto-Regular.ttf");
 
     while (!m_Window.ShouldClose()) {
         m_Window.Begin();
@@ -128,12 +120,13 @@ void Game::Mainloop() {
         glm::vec3 start = m_Player.GetEyePosition();
         glm::vec3 end = start + m_Player.GetLookDirection() * m_GameState.reach;
         if (auto hit = m_World.CastRay(start, end)) {
-            if (hit->blockPosition.IsValid()) {
-                glm::ivec3 worldPos =
-                    (hit->chunkPos * static_cast<int>(ChunkDim::Size)) + glm::ivec3(hit->blockPosition);
-                float alpha = 0.2f + (0.8f / 16) * hit->block.breakStage;
-                m_BlockOverlayRenderer.DrawBox(worldPos, {0.0f, 0.0f, 0.0f, alpha});
+            glm::ivec3 worldPos = (hit->chunkPos * static_cast<int>(ChunkDim::Size)) + glm::ivec3(hit->blockPos);
+            auto [chunkPos, blockPos] = WorldPos2ChunkAndBlock(worldPos);
+            if (m_World.TryGetChunk(chunkPos)) {
+                m_GameState.inReachBlock = hit;
             }
+        } else {
+            m_GameState.inReachBlock = std::nullopt;
         }
 
         if (m_Window.IsResized()) {
@@ -162,12 +155,41 @@ void Game::Mainloop() {
         if (m_DebugState.debugDraw) {
             m_DebugRenderer.Render(camera, dt);
         }
+
+        if (m_GameState.inReachBlock.has_value()) {
+            auto &hit = *m_GameState.inReachBlock;
+            float alpha = 0.2f + (0.8f / 16) * hit.block.breakStage;
+            m_BlockOverlayRenderer.DrawBox(
+                (glm::vec3(hit.chunkPos) * static_cast<float>(ChunkDim::Size) + glm::vec3(hit.blockPos)),
+                {0.0f, 0.0f, 0.0f, alpha});
+        }
         m_BlockOverlayRenderer.Render(camera);
 
         nvgBeginFrame(vg, m_Window.GetWidth(), m_Window.GetHeight(), 2.0);
+        nvgBeginPath(vg);
         nvgCircle(vg, m_Window.GetWidth() / 2.0f, m_Window.GetHeight() / 2.0f, 5);
         nvgFillColor(vg, nvgRGBA(255, 0, 0, 255));
         nvgFill(vg);
+        nvgBeginPath(vg);
+        auto p = m_Player.GetPosition();
+        nvgFontSize(vg, 20);
+        nvgFontFace(vg, "roboto");
+        nvgFillColor(vg, nvgRGB(255, 255, 255));
+        nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+        nvgText(vg, 0, 0, std::format("({:.1f},{:.1f},{:.1f})", p.x, p.y, p.z).c_str(), nullptr);
+
+        if (m_GameState.inReachBlock.has_value()) {
+            auto &hit = *m_GameState.inReachBlock;
+            nvgBeginPath(vg);
+            nvgRoundedRect(vg, m_Window.GetWidth() - 210, 10, 200, 100, 20);
+            nvgFillColor(vg, nvgRGBA(20, 20, 20, 180));
+            nvgFill(vg);
+            nvgFontSize(vg, 20);
+            nvgFontFace(vg, "roboto");
+            nvgFillColor(vg, nvgRGB(255, 255, 255));
+            nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+            nvgText(vg, m_Window.GetWidth() - 200, 20, std::format("{}", hit.block.name).c_str(), nullptr);
+        }
         nvgEndFrame(vg);
 
         m_Window.End();

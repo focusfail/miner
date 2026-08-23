@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
+#include <string_view>
 
 using BlockID = uint16_t;
 
@@ -10,7 +10,7 @@ struct Block {
     struct {
         uint8_t breakStage : 4 = 0;
         uint8_t lightEmit : 4 = 0;
-        uint8_t lightLv : 4 = 1;
+        uint8_t lightLv : 4 = 4;
     };
 };
 
@@ -22,6 +22,7 @@ struct BlockInfo {
     uint8_t breakStage;
     uint8_t lightEmit;
     uint8_t lightLv;
+    std::string_view name;
 };
 
 Block BlockFromID(BlockID id);
