@@ -96,13 +96,12 @@ BlockInfo Chunk::GetBlock(BlockIndex idx) const {
     const auto &raw = GetBlockRaw(idx);
     const auto &entry = br.GetEntry(raw.id);
 
-    return {
-        .id = raw.id,
+    return {.id = raw.id,
         .texId = entry.texId,
         .solid = entry.solid,
         .transparent = entry.transparent,
         .breakStage = raw.lightLv,
         .lightEmit = raw.lightEmit,
-    };
+        .name = std::string_view(entry.name)};
 }
 BlockInfo Chunk::GetBlock(const BlockPosition &pos) const { return GetBlock(pos.Idx()); }
