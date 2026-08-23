@@ -17,7 +17,7 @@
 struct HitResult {
     Chunk *chunk;
     ChunkPosition chunkPos;
-    BlockPosition blockPosition;
+    BlockPosition blockPos;
     BlockInfo block;
     glm::vec3 position;
     glm::vec3 normal;
@@ -47,4 +47,5 @@ private:
     ChunkManager m_ChunkManager;
     ChunkRenderer m_ChunkRenderer;
     TextureArray m_BlockTextures;
+    TextureArray m_OverlayTextures;
 };

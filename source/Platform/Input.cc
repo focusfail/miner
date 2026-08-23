@@ -5,10 +5,11 @@
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
 
-void Input::Init(GLFWwindow *windowPtr) {
-    glfwSetKeyCallback(windowPtr, Input::KeyFun);
-    glfwSetCursorPosCallback(windowPtr, Input::MouseFun);
-    glfwSetMouseButtonCallback(windowPtr, Input::MouseBtnFun);
+void Input::Init(GLFWwindow *glfw) {
+    glfwSetKeyCallback(glfw, Input::KeyFun);
+    glfwSetCursorPosCallback(glfw, Input::MouseFun);
+    glfwSetMouseButtonCallback(glfw, Input::MouseBtnFun);
+    glfwSetScrollCallback(glfw, Input::ScrollFun);
     m_NewKeys.fill(false);
     m_OldKeys.fill(false);
     m_NewMouse.fill(false);
@@ -16,8 +17,8 @@ void Input::Init(GLFWwindow *windowPtr) {
     spdlog::info("{} {}", NUM_KEYBOARD_KEYS, NUM_MOUSE_BUTTONS);
 }
 
-void Input::KeyFun(GLFWwindow *windowPtr, int key, int sc, int ac, int mods) {
-    auto window = static_cast<Window *>(glfwGetWindowUserPointer(windowPtr));
+void Input::KeyFun(GLFWwindow *glfw, int key, int sc, int ac, int mods) {
+    auto window = static_cast<Window *>(glfwGetWindowUserPointer(glfw));
     auto &input = window->GetInput();
     switch (ac) {
     case GLFW_PRESS: {
@@ -29,14 +30,20 @@ void Input::KeyFun(GLFWwindow *windowPtr, int key, int sc, int ac, int mods) {
     }
 }
 
-void Input::MouseFun(GLFWwindow *windowPtr, double x, double y) {
-    auto window = static_cast<Window *>(glfwGetWindowUserPointer(windowPtr));
+void Input::ScrollFun(GLFWwindow *glfw, double, double y) {
+    auto window = static_cast<Window *>(glfwGetWindowUserPointer(glfw));
+    auto &input = window->GetInput();
+    input.m_Scroll = y;
+}
+
+void Input::MouseFun(GLFWwindow *glfw, double x, double y) {
+    auto window = static_cast<Window *>(glfwGetWindowUserPointer(glfw));
     auto &input = window->GetInput();
     input.m_NewMousePosition = {x, y};
 }
 
-void Input::MouseBtnFun(GLFWwindow *windowPtr, int btn, int ac, int mods) {
-    auto window = static_cast<Window *>(glfwGetWindowUserPointer(windowPtr));
+void Input::MouseBtnFun(GLFWwindow *glfw, int btn, int ac, int mods) {
+    auto window = static_cast<Window *>(glfwGetWindowUserPointer(glfw));
     auto &input = window->GetInput();
 
     switch (ac) {
@@ -118,34 +125,27 @@ void Input::End() {
     std::copy(m_NewKeys.begin(), m_NewKeys.end(), m_OldKeys.begin());
     std::copy(m_NewMouse.begin(), m_NewMouse.end(), m_OldMouse.begin());
     m_OldMousePosition = m_NewMousePosition;
+    m_Scroll = 0;
 }
 
-bool Input::KeyDown(KeyboardKey k) const {
-    return m_NewKeys[static_cast<size_t>(k)];
-}
+bool Input::KeyDown(KeyboardKey k) const { return m_NewKeys[static_cast<size_t>(k)]; }
 
 bool Input::KeyPressed(KeyboardKey k) const {
-    return m_NewKeys[static_cast<size_t>(k)] &&
-           !m_OldKeys[static_cast<size_t>(k)];
+    return m_NewKeys[static_cast<size_t>(k)] && !m_OldKeys[static_cast<size_t>(k)];
 }
 
 bool Input::KeyReleased(KeyboardKey k) const {
-    return !m_NewKeys[static_cast<size_t>(k)] &&
-           m_OldKeys[static_cast<size_t>(k)];
+    return !m_NewKeys[static_cast<size_t>(k)] && m_OldKeys[static_cast<size_t>(k)];
 }
 
-bool Input::MouseButtonDown(MouseButton b) const {
-    return m_NewMouse[static_cast<size_t>(b)];
-}
+bool Input::MouseButtonDown(MouseButton b) const { return m_NewMouse[static_cast<size_t>(b)]; }
 
 bool Input::MouseButtonPressed(MouseButton b) const {
-    return m_NewMouse[static_cast<size_t>(b)] &&
-           !m_OldMouse[static_cast<size_t>(b)];
+    return m_NewMouse[static_cast<size_t>(b)] && !m_OldMouse[static_cast<size_t>(b)];
 }
 
 bool Input::MouseButtonReleased(MouseButton b) const {
-    return !m_NewMouse[static_cast<size_t>(b)] &&
-           m_OldMouse[static_cast<size_t>(b)];
+    return !m_NewMouse[static_cast<size_t>(b)] && m_OldMouse[static_cast<size_t>(b)];
 }
 
 void Input::RegisterKeybind(Keybind kb) {
@@ -154,6 +154,5 @@ void Input::RegisterKeybind(Keybind kb) {
 }
 
 glm::vec2 Input::GetMousePosition() const { return m_NewMousePosition; }
-glm::vec2 Input::GetMouseDelta() const {
-    return m_NewMousePosition - m_OldMousePosition;
-}
+glm::vec2 Input::GetMouseDelta() const { return m_NewMousePosition - m_OldMousePosition; }
+double Input::GetScrollDelta() const { return m_Scroll; }

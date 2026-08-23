@@ -7,6 +7,7 @@
 #include "World/Block/BlockRegistry.hh"
 #include "World/Coordinates.hh"
 #include "World/World.hh"
+#include <algorithm>
 #include <glad/gl.h>
 #include <optional>
 #include <spdlog/spdlog.h>
@@ -16,6 +17,8 @@
 #include <nanovg_gl.h>
 
 NVGcontext *vg = nullptr;
+BlockID currentBlock = 1;
+BlockID maxBlock;
 
 void Game::Init() {
     spdlog::info("[Game] Init");
@@ -35,6 +38,8 @@ void Game::Init() {
     m_DebugRenderer.Init();
     m_BlockOverlayRenderer.Init();
     m_World.Init();
+
+    maxBlock = BlockRegistry::GetInstance().GetBlockCount();
 
     m_Player.SetPosition({8.5, 2, 8.5});
 
@@ -67,6 +72,7 @@ void Game::Mainloop() {
             if (auto chunk = m_World.TryGetChunk(hit->chunkPos)) {
                 chunk->SetBlockBreakStage(
                     hit->blockPos, chunk->GetBlockBreakStage(hit->blockPos) + m_GameState.blockBreakStagesPerMine);
+                chunk->isDirty = true;
             }
         }
     }};
@@ -86,7 +92,7 @@ void Game::Mainloop() {
 
         if (hit.has_value()) {
             auto worldPos =
-                glm::vec3(hit->chunkPos) * static_cast<float>(ChunkDim::Size) + glm::vec3(hit->blockPos) + hit->normal;
+                glm::vec3(hit->chunkPos) * static_cast<float>(CHUNK_SIZE) + glm::vec3(hit->blockPos) + hit->normal;
             auto [chunkPos, blockPos] = WorldPos2ChunkAndBlock(worldPos);
             glm::vec3 minA, maxA, minB, maxB;
             blockPos.GetAABB(minA, maxA);
@@ -94,7 +100,7 @@ void Game::Mainloop() {
 
             auto chunk = m_World.TryGetChunk(chunkPos);
             if (!AABBIntersects(minA, maxA, minB, maxB) && chunk) {
-                chunk->SetBlock(blockPos, {.id = BlockRegistry::GetInstance().GetBlockIDByName("stone")});
+                chunk->SetBlock(blockPos, {.id = currentBlock});
                 spdlog::info("Placed block at C({},{},{}) B({},{},{})", chunkPos.x, chunkPos.y, chunkPos.z,
                     blockPos.v.x, blockPos.v.y, blockPos.v.z);
             }
@@ -112,7 +118,7 @@ void Game::Mainloop() {
     input.RegisterKeybind(placeTorch);
     input.RegisterKeybind(placeBlock);
 
-    int font = nvgCreateFont(vg, "roboto", "/home/focus/Downloads/Roboto-Regular.ttf");
+    nvgCreateFont(vg, "roboto", "/home/focus/Downloads/Roboto-Regular.ttf");
 
     while (!m_Window.ShouldClose()) {
         m_Window.Begin();
@@ -120,7 +126,7 @@ void Game::Mainloop() {
         glm::vec3 start = m_Player.GetEyePosition();
         glm::vec3 end = start + m_Player.GetLookDirection() * m_GameState.reach;
         if (auto hit = m_World.CastRay(start, end)) {
-            glm::ivec3 worldPos = (hit->chunkPos * static_cast<int>(ChunkDim::Size)) + glm::ivec3(hit->blockPos);
+            glm::ivec3 worldPos = (hit->chunkPos * static_cast<int>(CHUNK_SIZE)) + glm::ivec3(hit->blockPos);
             auto [chunkPos, blockPos] = WorldPos2ChunkAndBlock(worldPos);
             if (m_World.TryGetChunk(chunkPos)) {
                 m_GameState.inReachBlock = hit;
@@ -132,6 +138,13 @@ void Game::Mainloop() {
         if (m_Window.IsResized()) {
             glViewport(0, 0, m_Window.GetWidth(), m_Window.GetHeight());
         }
+
+        if (input.GetScrollDelta() != 0) {
+            int off = static_cast<int>(input.GetScrollDelta());
+            spdlog::info("{}", off);
+            currentBlock = std::clamp(currentBlock + off, 1, static_cast<int>(maxBlock) - 1);
+        }
+
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
         glDepthMask(GL_TRUE);
@@ -158,39 +171,50 @@ void Game::Mainloop() {
 
         if (m_GameState.inReachBlock.has_value()) {
             auto &hit = *m_GameState.inReachBlock;
-            float alpha = 0.2f + (0.8f / 16) * hit.block.breakStage;
+            float alpha = 0.2f;
             m_BlockOverlayRenderer.DrawBox(
-                (glm::vec3(hit.chunkPos) * static_cast<float>(ChunkDim::Size) + glm::vec3(hit.blockPos)),
+                (glm::vec3(hit.chunkPos) * static_cast<float>(CHUNK_SIZE) + glm::vec3(hit.blockPos)),
                 {0.0f, 0.0f, 0.0f, alpha});
         }
         m_BlockOverlayRenderer.Render(camera);
-
-        nvgBeginFrame(vg, m_Window.GetWidth(), m_Window.GetHeight(), 2.0);
-        nvgBeginPath(vg);
-        nvgCircle(vg, m_Window.GetWidth() / 2.0f, m_Window.GetHeight() / 2.0f, 5);
-        nvgFillColor(vg, nvgRGBA(255, 0, 0, 255));
-        nvgFill(vg);
-        nvgBeginPath(vg);
-        auto p = m_Player.GetPosition();
-        nvgFontSize(vg, 20);
-        nvgFontFace(vg, "roboto");
-        nvgFillColor(vg, nvgRGB(255, 255, 255));
-        nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-        nvgText(vg, 0, 0, std::format("({:.1f},{:.1f},{:.1f})", p.x, p.y, p.z).c_str(), nullptr);
-
-        if (m_GameState.inReachBlock.has_value()) {
-            auto &hit = *m_GameState.inReachBlock;
+        {
+            // crosshair
+            nvgBeginFrame(vg, m_Window.GetWidth(), m_Window.GetHeight(), 2.0);
             nvgBeginPath(vg);
-            nvgRoundedRect(vg, m_Window.GetWidth() - 210, 10, 200, 100, 20);
-            nvgFillColor(vg, nvgRGBA(20, 20, 20, 180));
+            nvgCircle(vg, m_Window.GetWidth() / 2.0f, m_Window.GetHeight() / 2.0f, 5);
+            nvgFillColor(vg, nvgRGBA(255, 0, 0, 255));
             nvgFill(vg);
+
+            // coords
+            nvgBeginPath(vg);
+            auto p = m_Player.GetPosition();
             nvgFontSize(vg, 20);
             nvgFontFace(vg, "roboto");
             nvgFillColor(vg, nvgRGB(255, 255, 255));
-            nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-            nvgText(vg, m_Window.GetWidth() - 200, 20, std::format("{}", hit.block.name).c_str(), nullptr);
+            nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+            nvgText(vg, m_Window.GetWidth() / 2.0f, 5, std::format("({:.1f},{:.1f},{:.1f})", p.x, p.y, p.z).c_str(),
+                nullptr);
+            nvgTextAlign(vg, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
+
+            nvgText(vg, m_Window.GetWidth() - 5, 30,
+                std::format("Selected Block: {}", BlockRegistry::GetInstance().GetName(currentBlock)).c_str(), nullptr);
+
+            // waila
+            if (m_GameState.inReachBlock.has_value()) {
+                auto &hit = *m_GameState.inReachBlock;
+                nvgBeginPath(vg);
+                nvgFontSize(vg, 20);
+                nvgFontFace(vg, "roboto");
+                nvgFillColor(vg, nvgRGB(255, 255, 255));
+                nvgTextAlign(vg, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
+                nvgText(vg, m_Window.GetWidth() - 5, 5,
+                    std::format("{} id: {} lightemit: {} lightlv: {} breakstage: {}", hit.block.name, hit.block.id,
+                        hit.block.lightEmit, hit.block.lightLv, hit.block.breakStage)
+                        .c_str(),
+                    nullptr);
+            }
+            nvgEndFrame(vg);
         }
-        nvgEndFrame(vg);
 
         m_Window.End();
     }

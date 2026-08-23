@@ -32,6 +32,8 @@ public:
     BlockID GetBlockIDByName(const std::string &name);
     const BlockRegistryEntry &GetEntry(BlockID id) const;
 
+    int GetBlockCount() const { return m_Defs.size(); }
+
 private:
     std::unordered_map<std::string, size_t> m_NameToIdx;
     std::vector<BlockRegistryEntry> m_Defs;

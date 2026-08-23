@@ -17,7 +17,7 @@ struct DebugState {
 };
 
 struct GameState {
-    int blockBreakStagesPerMine = 4;
+    int blockBreakStagesPerMine = 1;
     float blockMineTimeout = 0.05f;
     float blockMineTimer = 0.0f;
     float reach = 4.0f;

@@ -30,7 +30,7 @@ struct Keybind {
 };
 
 class Input {
-  public:
+public:
     Input() = default;
     ~Input() = default;
 
@@ -41,6 +41,8 @@ class Input {
     bool KeyPressed(KeyboardKey k) const;
     bool KeyReleased(KeyboardKey k) const;
     bool KeyDown(KeyboardKey k) const;
+
+    double GetScrollDelta() const;
 
     bool MouseButtonPressed(MouseButton b) const;
     bool MouseButtonReleased(MouseButton b) const;
@@ -54,17 +56,20 @@ class Input {
     Input &operator=(const Input &) = delete;
     Input(const Input &) = delete;
 
-  private:
+private:
     static void KeyFun(GLFWwindow *, int, int, int, int);
     static void MouseBtnFun(GLFWwindow *, int, int, int);
     static void MouseFun(GLFWwindow *, double, double);
+    static void ScrollFun(GLFWwindow *glfw, double d, double);
 
+    double m_Scroll = 0;
     // note: enums have extra NONE value at end which is initialized to false
     // and never touched
     std::array<bool, NUM_MOUSE_BUTTONS> m_OldMouse;
     std::array<bool, NUM_MOUSE_BUTTONS> m_NewMouse;
     std::array<bool, NUM_KEYBOARD_KEYS> m_OldKeys;
     std::array<bool, NUM_KEYBOARD_KEYS> m_NewKeys;
+
     glm::vec2 m_OldMousePosition;
     glm::vec2 m_NewMousePosition;
 

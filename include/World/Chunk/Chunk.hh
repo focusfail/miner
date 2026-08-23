@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <memory>
 
-using ChunkBlockArray = std::unique_ptr<std::array<Block, ChunkDim::Volume>>;
+using ChunkBlockArray = std::unique_ptr<std::array<Block, CHUNK_VOLUME>>;
 
 struct Chunk {
     bool isDirty = false;

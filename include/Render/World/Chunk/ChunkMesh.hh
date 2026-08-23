@@ -14,6 +14,8 @@ struct ChunkMeshVertex {
 struct alignas(8) ChunkMeshFace {
     uint32_t face;
     uint32_t texId;
+    uint32_t breakStage;
+    uint32_t dummy;
 };
 
 struct ChunkMeshChunk {

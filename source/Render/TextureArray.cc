@@ -19,7 +19,7 @@ void TextureArray::Init() {
     glTextureParameteri(m_Texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
-void TextureArray::Bind() { glBindTexture(GL_TEXTURE_2D_ARRAY, m_Texture); }
+void TextureArray::Bind(uint32_t unit) { glBindTextureUnit(unit, m_Texture); }
 
 int TextureArray::AddTexture(const std::string &name) {
     auto &assets = AssetsManager::GetInstance();

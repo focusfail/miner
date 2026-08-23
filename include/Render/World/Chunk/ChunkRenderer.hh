@@ -28,11 +28,15 @@ public:
     void Render(const Camera &cam);
     void Destroy();
 
-    void SetTextureArray(TextureArray *ta) { m_Texture = ta; }
+    void SetTextureArrays(TextureArray *blocks, TextureArray *overlays) {
+        m_Texture = blocks;
+        m_Overlays = overlays;
+    }
 
 private:
     ShaderProgram *m_Program;
     TextureArray *m_Texture;
+    TextureArray *m_Overlays;
     GpuPool<ChunkMeshVertex> m_VertexPool;
     GpuPool<ChunkMeshFace> m_FacePool;
     GpuPool<ChunkMeshChunk> m_ChunkPool;

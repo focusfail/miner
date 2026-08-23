@@ -9,10 +9,8 @@
 
 #include <GLFW/glfw3.h>
 
-class Window : std::enable_shared_from_this<Window>,
-               private NonCopyable,
-               private NonMovable {
-  public:
+class Window : std::enable_shared_from_this<Window>, private NonCopyable, private NonMovable {
+public:
     Window() = default;
     ~Window();
 
@@ -35,7 +33,7 @@ class Window : std::enable_shared_from_this<Window>,
     Input &GetInput();
     GLFWwindow *GetGlfwWindow() const;
 
-  private:
+private:
     static void ResizeFun(GLFWwindow *glfw, int newX, int newY);
 
     bool m_IsResized = false;

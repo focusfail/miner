@@ -37,10 +37,8 @@ void ChunkRenderer::UploadMesh(const ChunkMeshData &mesh) {
         }
         if (auto slot = m_ChunkPool.Allocate(1)) {
             ChunkMeshChunk c[] = {mesh.chunk};
-            c[0].faceOffset = static_cast<uint32_t>(chunkMesh.faceSlot.offset /
-                                                    sizeof(ChunkMeshFace));
-            c[0].baseVertex = static_cast<uint32_t>(
-                chunkMesh.vertexSlot.offset / sizeof(ChunkMeshVertex));
+            c[0].faceOffset = static_cast<uint32_t>(chunkMesh.faceSlot.offset / sizeof(ChunkMeshFace));
+            c[0].baseVertex = static_cast<uint32_t>(chunkMesh.vertexSlot.offset / sizeof(ChunkMeshVertex));
 
             m_ChunkPool.Upload(*slot, c);
             chunkMesh.chunkSlot = *slot;
@@ -50,10 +48,8 @@ void ChunkRenderer::UploadMesh(const ChunkMeshData &mesh) {
         m_VertexPool.Upload(chunkMesh.vertexSlot, mesh.vertices);
         m_FacePool.Upload(chunkMesh.faceSlot, mesh.faces);
         ChunkMeshChunk c[] = {mesh.chunk};
-        c[0].faceOffset = static_cast<uint32_t>(chunkMesh.faceSlot.offset /
-                                                sizeof(ChunkMeshFace));
-        c[0].baseVertex = static_cast<uint32_t>(chunkMesh.vertexSlot.offset /
-                                                sizeof(ChunkMeshVertex));
+        c[0].faceOffset = static_cast<uint32_t>(chunkMesh.faceSlot.offset / sizeof(ChunkMeshFace));
+        c[0].baseVertex = static_cast<uint32_t>(chunkMesh.vertexSlot.offset / sizeof(ChunkMeshVertex));
 
         m_ChunkPool.Upload(chunkMesh.chunkSlot, c);
     }
@@ -73,23 +69,20 @@ void ChunkRenderer::Render(const Camera &cam) {
         if (!mesh.active) continue;
 
         m_DrawCmds.push_back({
-            .count = static_cast<uint32_t>(mesh.vertexSlot.size /
-                                           sizeof(ChunkMeshVertex)),
+            .count = static_cast<uint32_t>(mesh.vertexSlot.size / sizeof(ChunkMeshVertex)),
             .instanceCount = 1,
-            .firstIndex = static_cast<uint32_t>(mesh.vertexSlot.offset /
-                                                sizeof(ChunkMeshVertex)),
-            .baseInstance = static_cast<uint32_t>(mesh.chunkSlot.offset /
-                                                  sizeof(ChunkMeshChunk)),
+            .firstIndex = static_cast<uint32_t>(mesh.vertexSlot.offset / sizeof(ChunkMeshVertex)),
+            .baseInstance = static_cast<uint32_t>(mesh.chunkSlot.offset / sizeof(ChunkMeshChunk)),
         });
     }
 
-    glm::mat4 proj =
-        glm::perspective(glm::radians(75.0f), 1920.0f / 1080.0f, 0.1f, 1000.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(75.0f), 1920.0f / 1080.0f, 0.1f, 1000.0f);
     glm::mat4 vp = proj * cam.GetViewMatrix();
 
     m_Program->Bind();
     glBindVertexArray(m_DummyVAO);
-    m_Texture->Bind();
+    m_Texture->Bind(0);
+    m_Overlays->Bind(1);
     m_ChunkPool.Bind(0);
     m_FacePool.Bind(1);
     m_VertexPool.Bind(2);
@@ -97,12 +90,9 @@ void ChunkRenderer::Render(const Camera &cam) {
     m_Program->SetUniform(0, vp);
 
     if (!m_DrawCmds.empty()) {
-        // Upload contiguous vector to command buffer
-        m_CmdBuffer.Upload(0, m_DrawCmds.size() * sizeof(DrawCmd),
-                           m_DrawCmds.data());
+        m_CmdBuffer.Upload(0, m_DrawCmds.size() * sizeof(DrawCmd), m_DrawCmds.data());
         glMultiDrawArraysIndirect(
-            GL_TRIANGLES, reinterpret_cast<const void *>(0),
-            static_cast<GLsizei>(m_DrawCmds.size()), sizeof(DrawCmd));
+            GL_TRIANGLES, reinterpret_cast<const void *>(0), static_cast<GLsizei>(m_DrawCmds.size()), sizeof(DrawCmd));
     }
 }
 

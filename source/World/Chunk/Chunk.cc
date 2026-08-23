@@ -25,7 +25,7 @@ void Chunk::FillUniform(BlockID type) {
 
 void Chunk::EnsureMutable() {
     if (!this->blocks) {
-        this->blocks = std::make_unique<std::array<Block, ChunkDim::Volume>>();
+        this->blocks = std::make_unique<std::array<Block, CHUNK_VOLUME>>();
         this->blocks->fill(BlockFromID(this->uniformType));
     }
 
@@ -100,8 +100,9 @@ BlockInfo Chunk::GetBlock(BlockIndex idx) const {
         .texId = entry.texId,
         .solid = entry.solid,
         .transparent = entry.transparent,
-        .breakStage = raw.lightLv,
+        .breakStage = raw.breakStage,
         .lightEmit = raw.lightEmit,
+        .lightLv = raw.lightLv,
         .name = std::string_view(entry.name)};
 }
 BlockInfo Chunk::GetBlock(const BlockPosition &pos) const { return GetBlock(pos.Idx()); }

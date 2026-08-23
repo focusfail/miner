@@ -6,6 +6,7 @@
 #include "glm/geometric.hpp"
 #include "spdlog/spdlog.h"
 #include <array>
+#include <format>
 #include <queue>
 
 struct LightNode {
@@ -28,14 +29,28 @@ void World::Init() {
     }
 
     m_BlockTextures.Init();
+    m_OverlayTextures.Init();
 
     auto &t = m_BlockTextures;
     auto &b = BlockRegistry::GetInstance();
     b.Register("air", false, true, -1);
     b.Register("stone", true, false, t.AddTexture("block:stone"));
     b.Register("stone_bricks", true, false, t.AddTexture("block:stone_bricks"));
+    b.Register("andesite", true, false, t.AddTexture("block:andesite"));
+    b.Register("diamond_ore", true, false, t.AddTexture("block:diamond_ore"));
+    b.Register("dirt", true, false, t.AddTexture("block:dirt"));
+    b.Register("gold_ore", true, false, t.AddTexture("block:gold_ore"));
+    b.Register("gravel", true, false, t.AddTexture("block:gravel"));
+    b.Register("mud", true, false, t.AddTexture("block:mud"));
+    b.Register("packed_mud", true, false, t.AddTexture("block:packed_mud"));
+    b.Register("red_sand", true, false, t.AddTexture("block:red_sand"));
+    b.Register("sand", true, false, t.AddTexture("block:sand"));
 
-    m_ChunkRenderer.SetTextureArray(&m_BlockTextures);
+    for (int i = 1; i <= 10; i++) {
+        m_OverlayTextures.AddTexture(std::format("block:destroy:stage{}", i));
+    }
+
+    m_ChunkRenderer.SetTextureArrays(&m_BlockTextures, &m_OverlayTextures);
 }
 
 void World::Update() {
@@ -190,7 +205,7 @@ void World::PropagateLight(const ChunkPosition &chunkPos) {
 
     std::queue<LightNode> lightQueue;
 
-    for (size_t i = 0; i < ChunkDim::Volume; i++) {
+    for (size_t i = 0; i < CHUNK_VOLUME; i++) {
         auto blockIdx = BlockIndex(i);
         auto block = chunk->GetBlockRaw(blockIdx);
 
@@ -220,7 +235,7 @@ void World::PropagateLight(const ChunkPosition &chunkPos) {
         }
 
         for (const auto &off : offsets) {
-            auto wp = off + glm::vec3(*pos) + (glm::vec3(chunkPos) * static_cast<float>(ChunkDim::Size));
+            auto wp = off + glm::vec3(*pos) + (glm::vec3(chunkPos) * static_cast<float>(CHUNK_SIZE));
 
             auto [nbPos, blockPos] = WorldPos2ChunkAndBlock(wp);
             if (auto nbChunk = TryGetChunk(nbPos)) {

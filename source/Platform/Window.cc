@@ -51,10 +51,7 @@ void Window::Resize(int w, int h) {
     m_IsResized = true;
 }
 
-bool Window::ShouldClose() const {
-    return glfwWindowShouldClose(m_Glfw) ||
-           m_Input.KeyDown(KeyboardKey::ESCAPE);
-}
+bool Window::ShouldClose() const { return glfwWindowShouldClose(m_Glfw) || m_Input.KeyDown(KeyboardKey::ESCAPE); }
 
 void Window::Begin() {
     glfwPollEvents();
@@ -81,9 +78,7 @@ int Window::GetHeight() const {
     return h;
 }
 
-float Window::GetDeltaTime() const {
-    return static_cast<float>(m_NewTime - m_OldTime);
-}
+float Window::GetDeltaTime() const { return static_cast<float>(m_NewTime - m_OldTime); }
 
 void Window::CaptureMouse(bool shouldCapture) {
     if (shouldCapture) {

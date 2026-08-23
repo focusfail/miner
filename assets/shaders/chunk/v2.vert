@@ -17,6 +17,8 @@ struct Vert {
 struct Face {
     uint face;
     uint texId;
+    uint breakStage;
+    uint pad;
 };
 
 struct Chunk {
@@ -36,6 +38,7 @@ layout(location = 0) uniform mat4 uVP;
 flat out float vFace;
 flat out float vTex;
 flat out float vLight;
+flat out float vBreakStage;
 out vec2 vTexCoord;
 
 vec2 GetChunkUV(vec3 pos, uint faceType, uint isUniform, uint baseVertex) {
@@ -73,6 +76,7 @@ void main() {
 
     vFace = float(face.face);
     vTex = float(face.texId);
+    vBreakStage = float(face.breakStage);
     vLight = vert.light;
 
     vTexCoord = GetChunkUV(vert.pos, face.face, chunk.isUniform, chunk.baseVertex);

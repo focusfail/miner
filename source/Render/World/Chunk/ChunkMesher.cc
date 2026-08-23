@@ -3,6 +3,7 @@
 #include "World/Block/BlockRegistry.hh"
 #include "World/Coordinates.hh"
 #include "spdlog/spdlog.h"
+#include <cstdint>
 
 static const std::array<ChunkMeshVertex, 36> blockVertices = {{
     // Front (+Z)
@@ -69,8 +70,8 @@ std::array<bool, 6> GetShouldCull(const Chunk &chunk, BlockRegistry &reg, const 
     for (int i = 0; i < 6; ++i) {
         const glm::ivec3 neighbor = glm::ivec3(pos) + offs[i];
 
-        if (neighbor.x < 0 || neighbor.x >= ChunkDim::Size || neighbor.y < 0 || neighbor.y >= ChunkDim::Size ||
-            neighbor.z < 0 || neighbor.z >= ChunkDim::Size) {
+        if (neighbor.x < 0 || neighbor.x >= CHUNK_SIZE || neighbor.y < 0 || neighbor.y >= CHUNK_SIZE ||
+            neighbor.z < 0 || neighbor.z >= CHUNK_SIZE) {
 
             shouldCull[i] = false;
             continue;
@@ -105,10 +106,10 @@ ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, std::array<Chunk *, 
             for (int faceVertexIndex = 0; faceVertexIndex < 6; faceVertexIndex++) {
                 int vertexIndex = faceVertexIndex + face * 6;
                 const auto &ogVertex = blockVertices[vertexIndex];
-                glm::vec3 newPos = ogVertex.position * static_cast<float>(ChunkDim::Size);
+                glm::vec3 newPos = ogVertex.position * static_cast<float>(CHUNK_SIZE);
                 mesh.vertices.emplace_back(ChunkMeshVertex{newPos});
             }
-            mesh.faces.emplace_back(static_cast<uint32_t>(face), br.GetTexture(chunk.uniformType));
+            mesh.faces.emplace_back(static_cast<uint32_t>(face), br.GetTexture(chunk.uniformType), 0);
         }
 
         return mesh;
@@ -131,8 +132,7 @@ ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, std::array<Chunk *, 
         for (int face = 0; face != static_cast<int>(Face::Last); face++) {
             if (shouldCull[face]) continue;
 
-            auto nbPos =
-                offsets[face] + glm::vec3(pos) + glm::vec3(chunk.position) * static_cast<float>(ChunkDim::Size);
+            auto nbPos = offsets[face] + glm::vec3(pos) + glm::vec3(chunk.position) * static_cast<float>(CHUNK_SIZE);
             auto [nbChunkPos, nbBlockPos] = WorldPos2ChunkAndBlock(nbPos);
 
             Chunk *nbChunk = (nbChunkPos == chunk.position) ? const_cast<Chunk *>(&chunk) : nbChunks[face];
@@ -148,7 +148,8 @@ ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, std::array<Chunk *, 
                 mesh.vertices.emplace_back(
                     ChunkMeshVertex{.position = newPos, .light = static_cast<float>(nbBlock.lightLv) / 15.0f});
             }
-            mesh.faces.emplace_back(static_cast<uint32_t>(face), br.GetTexture(block.id));
+            mesh.faces.emplace_back(
+                static_cast<uint32_t>(face), br.GetTexture(block.id), static_cast<uint32_t>(block.breakStage));
         }
     }
 

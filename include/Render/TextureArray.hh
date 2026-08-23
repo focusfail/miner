@@ -8,7 +8,7 @@
 class TextureArray : private NonCopyable, private NonMovable {
 public:
     void Init();
-    void Bind();
+    void Bind(uint32_t unit = 0);
 
     int AddTexture(const std::string &name);
 
