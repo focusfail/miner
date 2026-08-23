@@ -1,5 +1,6 @@
 #include "Render/World/Chunk/ChunkMesher.hh"
 #include "Render/World/Chunk/ChunkMesh.hh"
+#include "World/Block/BlockRegistry.hh"
 #include "World/Coordinates.hh"
 #include "spdlog/spdlog.h"
 
@@ -80,14 +81,15 @@ std::array<bool, 6> GetShouldCull(const Chunk &chunk, BlockRegistry &reg, const 
 
         BlockIndex idx = neighborPos.Idx();
 
-        auto block = chunk.GetBlock(idx);
+        auto block = chunk.GetBlockRaw(idx);
         shouldCull[i] = !reg.IsTransparent(block.id);
     }
 
     return shouldCull;
 }
 
-ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, BlockRegistry &reg, std::array<Chunk *, 6> &nbChunks) {
+ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, std::array<Chunk *, 6> &nbChunks) {
+    auto &br = BlockRegistry::GetInstance();
     static const glm::vec3 offsets[6] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
 
     ChunkMeshData mesh;
@@ -95,7 +97,7 @@ ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, BlockRegistry &reg, 
     mesh.chunk.isUniform = chunk.isUniform;
     mesh.chunk.position = chunk.position;
 
-    if (chunk.isUniform && !reg.IsTransparent(chunk.uniformType)) {
+    if (chunk.isUniform && !br.IsTransparent(chunk.uniformType)) {
 
         mesh.vertices.reserve(blockVertices.size());
 
@@ -106,7 +108,7 @@ ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, BlockRegistry &reg, 
                 glm::vec3 newPos = ogVertex.position * static_cast<float>(ChunkDim::Size);
                 mesh.vertices.emplace_back(ChunkMeshVertex{newPos});
             }
-            mesh.faces.emplace_back(static_cast<uint32_t>(face), reg.GetTexture(chunk.uniformType));
+            mesh.faces.emplace_back(static_cast<uint32_t>(face), br.GetTexture(chunk.uniformType));
         }
 
         return mesh;
@@ -118,14 +120,14 @@ ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, BlockRegistry &reg, 
         BlockIndex blockIndex = BlockIndex(i);
         if (!blockIndex.IsValid()) continue;
 
-        auto block = chunk.GetBlock(blockIndex);
+        auto block = chunk.GetBlockRaw(blockIndex);
         auto maybePos = blockIndex.Pos();
 
-        if (reg.IsTransparent(block.id) || !maybePos.has_value()) continue;
+        if (br.IsTransparent(block.id) || !maybePos.has_value()) continue;
 
         auto pos = *maybePos;
 
-        auto shouldCull = GetShouldCull(chunk, reg, pos);
+        auto shouldCull = GetShouldCull(chunk, br, pos);
         for (int face = 0; face != static_cast<int>(Face::Last); face++) {
             if (shouldCull[face]) continue;
 
@@ -137,7 +139,7 @@ ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, BlockRegistry &reg, 
 
             if (!nbChunk) continue;
 
-            auto nbBlock = nbChunk->GetBlock(nbBlockPos);
+            auto nbBlock = nbChunk->GetBlockRaw(nbBlockPos);
 
             for (int faceVertexIndex = 0; faceVertexIndex < 6; faceVertexIndex++) {
                 int vertexIndex = faceVertexIndex + face * 6;
@@ -146,7 +148,7 @@ ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, BlockRegistry &reg, 
                 mesh.vertices.emplace_back(
                     ChunkMeshVertex{.position = newPos, .light = static_cast<float>(nbBlock.lightLv) / 15.0f});
             }
-            mesh.faces.emplace_back(static_cast<uint32_t>(face), reg.GetTexture(block.id));
+            mesh.faces.emplace_back(static_cast<uint32_t>(face), br.GetTexture(block.id));
         }
     }
 

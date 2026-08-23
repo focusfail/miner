@@ -1,5 +1,6 @@
 #include "World/World.hh"
 #include "World/Block/Block.hh"
+#include "World/Block/BlockRegistry.hh"
 #include "World/Chunk/Chunk.hh"
 #include "World/Coordinates.hh"
 #include "glm/geometric.hpp"
@@ -29,7 +30,7 @@ void World::Init() {
     m_BlockTextures.Init();
 
     auto &t = m_BlockTextures;
-    auto &b = m_BlockRegistry;
+    auto &b = BlockRegistry::GetInstance();
     b.Register("air", false, true, -1);
     b.Register("stone", true, false, t.AddTexture("block:stone"));
     b.Register("stone_bricks", true, false, t.AddTexture("block:stone_bricks"));
@@ -44,7 +45,7 @@ void World::Update() {
 
         Chunk &chunk = m_ChunkManager.GetChunkByPosition(pos);
         PropagateLight(pos);
-        ChunkMeshData meshData = m_ChunkMesher.GenerateMesh(chunk, m_BlockRegistry, nbs);
+        ChunkMeshData meshData = m_ChunkMesher.GenerateMesh(chunk, nbs);
         m_ChunkRenderer.UploadMesh(meshData);
         chunk.isDirty = false;
     }
@@ -110,12 +111,12 @@ std::optional<HitResult> World::CastRay(glm::vec3 start, glm::vec3 end) {
     while (currentDist <= maxDist) {
         auto [chunkPos, blockPos] = WorldPos2ChunkAndBlock(x, y, z);
 
-        Block block = BlockFromID(0);
+        BlockInfo block{};
         if (auto chunk = TryGetChunk(chunkPos)) {
             block = chunk->GetBlock(blockPos);
         }
 
-        if (m_BlockRegistry.IsSolid(block.id)) {
+        if (block.solid) {
             HitResult result;
             result.chunkPos = chunkPos;
             result.blockPosition = blockPos;
@@ -162,8 +163,8 @@ auto World::IsBlockSolidAt(const glm::vec3 &worldPos) -> bool {
     Chunk *chunk = TryGetChunk(chunkPos);
     if (!chunk) return false;
 
-    Block block = chunk->GetBlock(blockPos);
-    return m_BlockRegistry.IsSolid(block.id);
+    BlockInfo block = chunk->GetBlock(blockPos);
+    return block.solid;
 }
 
 std::array<Chunk *, 6> World::GetChunkNeighbors(const ChunkPosition &pos) {
@@ -189,7 +190,7 @@ void World::PropagateLight(const ChunkPosition &chunkPos) {
 
     for (size_t i = 0; i < ChunkDim::Volume; i++) {
         auto blockIdx = BlockIndex(i);
-        auto block = chunk->GetBlock(blockIdx);
+        auto block = chunk->GetBlockRaw(blockIdx);
 
         if (block.lightEmit == 0) continue;
 
@@ -205,7 +206,7 @@ void World::PropagateLight(const ChunkPosition &chunkPos) {
         lightQueue.pop();
         chunk = node.chunk;
 
-        auto block = chunk->GetBlock(node.idx);
+        auto block = chunk->GetBlockRaw(node.idx);
         uint8_t currentLight = block.lightLv;
 
         if (currentLight <= 1) continue;
@@ -222,7 +223,7 @@ void World::PropagateLight(const ChunkPosition &chunkPos) {
             auto [nbPos, blockPos] = WorldPos2ChunkAndBlock(wp);
             if (auto nbChunk = TryGetChunk(nbPos)) {
                 BlockIndex neighborIdx = blockPos.Idx();
-                auto neighbor = nbChunk->GetBlock(neighborIdx);
+                auto neighbor = nbChunk->GetBlockRaw(neighborIdx);
 
                 nbChunk->EnsureMutable();
                 nbChunk->isDirty = true;

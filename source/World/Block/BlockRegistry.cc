@@ -8,10 +8,10 @@ void BlockRegistry::Register(const std::string &name, bool solid, bool transpare
 
 const std::string &BlockRegistry::GetName(BlockID id) { return m_Defs.at(id).name; }
 
-bool BlockRegistry::IsSolid(BlockID id) { return m_Defs.at(id).solid; }
-bool BlockRegistry::IsTransparent(BlockID id) { return m_Defs.at(id).transparent; }
+bool BlockRegistry::IsSolid(BlockID id) const { return m_Defs.at(id).solid; }
+bool BlockRegistry::IsTransparent(BlockID id) const { return m_Defs.at(id).transparent; }
 
-int BlockRegistry::GetTexture(BlockID id) { return m_Defs.at(id).texId; }
+int BlockRegistry::GetTexture(BlockID id) const { return m_Defs.at(id).texId; }
 
 Block BlockRegistry::MakeBlock(BlockID id) const {
     return Block{
@@ -21,3 +21,5 @@ Block BlockRegistry::MakeBlock(BlockID id) const {
 }
 
 BlockID BlockRegistry::GetBlockIDByName(const std::string &name) { return m_NameToIdx[name]; }
+
+const BlockRegistryEntry &BlockRegistry::GetEntry(BlockID id) const { return m_Defs[id]; }

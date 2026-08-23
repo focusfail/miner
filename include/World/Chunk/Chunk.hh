@@ -18,8 +18,11 @@ struct Chunk {
 
     Chunk(const ChunkPosition &pos, BlockID uniformType);
 
-    Block GetBlock(const BlockPosition &pos) const;
-    Block GetBlock(BlockIndex idx) const;
+    Block GetBlockRaw(const BlockPosition &pos) const;
+    Block GetBlockRaw(BlockIndex idx) const;
+
+    BlockInfo GetBlock(const BlockPosition &pos) const;
+    BlockInfo GetBlock(BlockIndex idx) const;
 
     void SetBlockBreakStage(const BlockPosition &pos, uint8_t stage);
     uint8_t GetBlockBreakStage(const BlockPosition &pos);

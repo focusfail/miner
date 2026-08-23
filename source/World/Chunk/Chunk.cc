@@ -1,5 +1,6 @@
 #include "World/Chunk/Chunk.hh"
 #include "World/Block/Block.hh"
+#include "World/Block/BlockRegistry.hh"
 #include "World/Coordinates.hh"
 #include "spdlog/spdlog.h"
 #include <cassert>
@@ -31,7 +32,7 @@ void Chunk::EnsureMutable() {
     this->isUniform = false;
 }
 
-Block Chunk::GetBlock(BlockIndex idx) const {
+Block Chunk::GetBlockRaw(BlockIndex idx) const {
     if (this->isUniform) return BlockFromID(this->uniformType);
 
     if (!this->blocks || this->blocks->empty()) {
@@ -43,10 +44,10 @@ Block Chunk::GetBlock(BlockIndex idx) const {
     return this->blocks->at(idx.get());
 };
 
-Block Chunk::GetBlock(const BlockPosition &pos) const {
+Block Chunk::GetBlockRaw(const BlockPosition &pos) const {
     assert(pos.IsValid() && "Invalid block position");
     auto idx = pos.Idx();
-    return GetBlock(idx);
+    return GetBlockRaw(idx);
 };
 
 void Chunk::SetBlock(const BlockPosition &pos, BlockID blockId) {
@@ -89,3 +90,19 @@ uint8_t Chunk::GetBlockBreakStage(const BlockPosition &pos) {
     if (this->isUniform) return 0;
     return this->blocks->at(pos.Idx().get()).breakStage;
 }
+
+BlockInfo Chunk::GetBlock(BlockIndex idx) const {
+    const auto &br = BlockRegistry::GetInstance();
+    const auto &raw = GetBlockRaw(idx);
+    const auto &entry = br.GetEntry(raw.id);
+
+    return {
+        .id = raw.id,
+        .texId = entry.texId,
+        .solid = entry.solid,
+        .transparent = entry.transparent,
+        .breakStage = raw.lightLv,
+        .lightEmit = raw.lightEmit,
+    };
+}
+BlockInfo Chunk::GetBlock(const BlockPosition &pos) const { return GetBlock(pos.Idx()); }

@@ -5,17 +5,6 @@
 
 using BlockID = uint16_t;
 
-struct BlockInfo {
-    BlockID id;
-
-    int texId;
-
-    bool solid;
-    bool transparent;
-
-    std::string name;
-};
-
 struct Block {
     BlockID id = 0;
     struct {
@@ -25,4 +14,14 @@ struct Block {
     };
 };
 
-auto BlockFromID(BlockID id) -> Block;
+struct BlockInfo {
+    BlockID id;
+    int texId;
+    bool solid;
+    bool transparent;
+    uint8_t breakStage;
+    uint8_t lightEmit;
+    uint8_t lightLv;
+};
+
+Block BlockFromID(BlockID id);

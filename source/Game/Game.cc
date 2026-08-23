@@ -4,6 +4,7 @@
 #include "Platform/Keys.hh"
 #include "Render/Camera.hh"
 #include "TaskScheduler.h"
+#include "World/Block/BlockRegistry.hh"
 #include "World/Coordinates.hh"
 #include "World/World.hh"
 #include <glad/gl.h>
@@ -83,7 +84,8 @@ void Game::Mainloop() {
 
             auto chunk = m_World.TryGetChunk(chunkPos);
             if (!AABBIntersects(minA, maxA, minB, maxB) && chunk) {
-                chunk->SetBlock(blockPos, {.id = m_World.GetBlockRegistry().GetBlockIDByName("stone"), .lightEmit = 7});
+                chunk->SetBlock(
+                    blockPos, {.id = BlockRegistry::GetInstance().GetBlockIDByName("stone"), .lightEmit = 7});
                 spdlog::info("Placed block at C({},{},{}) B({},{},{})", chunkPos.x, chunkPos.y, chunkPos.z,
                     blockPos.v.x, blockPos.v.y, blockPos.v.z);
             }
@@ -102,7 +104,7 @@ void Game::Mainloop() {
 
             auto chunk = m_World.TryGetChunk(chunkPos);
             if (!AABBIntersects(minA, maxA, minB, maxB) && chunk) {
-                chunk->SetBlock(blockPos, {.id = m_World.GetBlockRegistry().GetBlockIDByName("stone")});
+                chunk->SetBlock(blockPos, {.id = BlockRegistry::GetInstance().GetBlockIDByName("stone")});
                 spdlog::info("Placed block at C({},{},{}) B({},{},{})", chunkPos.x, chunkPos.y, chunkPos.z,
                     blockPos.v.x, blockPos.v.y, blockPos.v.z);
             }

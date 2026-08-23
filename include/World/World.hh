@@ -17,7 +17,7 @@
 struct HitResult {
     ChunkPosition chunkPos;
     BlockPosition blockPosition;
-    Block block;
+    BlockInfo block;
     glm::vec3 position;
     glm::vec3 normal;
 };
@@ -41,12 +41,9 @@ public:
     bool IsBlockSolidAt(const glm::vec3 &pos);
     void PropagateLight(const ChunkPosition &chunkPos);
 
-    BlockRegistry &GetBlockRegistry() { return m_BlockRegistry; }
-
 private:
     ChunkMesher m_ChunkMesher;
     ChunkManager m_ChunkManager;
     ChunkRenderer m_ChunkRenderer;
-    BlockRegistry m_BlockRegistry;
     TextureArray m_BlockTextures;
 };

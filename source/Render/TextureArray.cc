@@ -31,31 +31,17 @@ int TextureArray::AddTexture(const std::string &name) {
     }
 
     int w, h, c;
-    auto data = stbi_load_from_memory(buffer.data(), buffer.size(), &w, &h, &c,
-                                      STBI_rgb_alpha);
+    auto data = stbi_load_from_memory(buffer.data(), buffer.size(), &w, &h, &c, STBI_rgb_alpha);
 
     if (m_Width < w || m_Height < h) {
-        spdlog::warn("[TextureArray] Texture too big to add to array: {}",
-                     name);
+        spdlog::warn("[TextureArray] Texture too big to add to array: {}", name);
         stbi_image_free(data);
         return -1;
     }
 
-    glTextureSubImage3D(m_Texture, 0, 0, 0, m_NumLayers, m_Width, m_Height, 1,
-                        GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTextureSubImage3D(m_Texture, 0, 0, 0, m_NumLayers, m_Width, m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
     stbi_image_free(data);
-
-    m_NameToIdx[name] = m_NumLayers;
 
     spdlog::info("[TextureArray] Added texture ({}): {}", m_NumLayers, name);
     return m_NumLayers++;
-}
-
-int TextureArray::GetLayerByName(const std::string& name) const {
-    auto it = m_NameToIdx.find(name);
-    if (it != m_NameToIdx.end()) {
-        return it->second;
-    }
-
-    return -1;
 }

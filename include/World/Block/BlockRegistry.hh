@@ -7,18 +7,32 @@
 #include <unordered_map>
 #include <vector>
 
+struct BlockRegistryEntry {
+    BlockID id;
+    int texId;
+    bool solid;
+    bool transparent;
+    std::string name;
+};
+
 class BlockRegistry : private NonCopyable, private NonMovable {
 public:
+    static BlockRegistry &GetInstance() {
+        static BlockRegistry Instance;
+        return Instance;
+    }
+
     void Register(const std::string &name, bool solid, bool transparent, int texId);
 
     const std::string &GetName(BlockID id);
-    bool IsSolid(BlockID id);
-    bool IsTransparent(BlockID id);
-    int GetTexture(BlockID id);
+    bool IsSolid(BlockID id) const;
+    bool IsTransparent(BlockID id) const;
+    int GetTexture(BlockID id) const;
     Block MakeBlock(BlockID id) const;
     BlockID GetBlockIDByName(const std::string &name);
+    const BlockRegistryEntry &GetEntry(BlockID id) const;
 
 private:
     std::unordered_map<std::string, size_t> m_NameToIdx;
-    std::vector<BlockInfo> m_Defs;
+    std::vector<BlockRegistryEntry> m_Defs;
 };
