@@ -12,6 +12,11 @@ add_subdirectory("./vendor/vfspp")
 add_subdirectory("./vendor/spdlog")
 add_subdirectory("./vendor/enkiTS")
 add_subdirectory("./vendor/magic_enum")
+add_subdirectory("./vendor/fastnoise2")
+
+add_library(nanovg)
+target_sources(nanovg PRIVATE "./vendor/nanovg/src/nanovg.c")
+target_include_directories(nanovg PUBLIC "./vendor/nanovg/src")
 
 project(
     ${TARGET}
@@ -44,6 +49,8 @@ target_link_libraries(
     vfspp
     magic_enum
     stb
+    nanovg
+    FastNoise2
 )
 target_compile_definitions(
     ${TARGET}

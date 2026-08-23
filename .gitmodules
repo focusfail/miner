@@ -16,3 +16,9 @@
 [submodule "vendor/vfspp"]
 	path = vendor/vfspp
 	url = https://github.com/focusfail/vfspp.git
+[submodule "vendor/nanovg"]
+	path = vendor/nanovg
+	url = https://github.com/memononen/nanovg.git
+[submodule "vendor/fastnoise2"]
+	path = vendor/fastnoise2
+	url = https://github.com/Auburn/FastNoise2.git
