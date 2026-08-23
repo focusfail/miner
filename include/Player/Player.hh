@@ -8,7 +8,7 @@
 #include "World/World.hh"
 
 class Player : private NonCopyable, private NonMovable {
-  public:
+public:
     Player();
 
     void Update(float dt, World &world, const Input &input);
@@ -16,6 +16,9 @@ class Player : private NonCopyable, private NonMovable {
 
     void SetFlight(bool enable) { m_Flight = enable; }
     bool GetFlight() const { return m_Flight; }
+    void GetAABB(glm::vec3 &minBounds, glm::vec3 &maxBounds) const {
+        return m_Collider.GetAABB(minBounds, maxBounds);
+    }
 
     Camera &GetCamera() { return m_Camera; }
     glm::vec3 GetPosition() const { return m_Position; }
@@ -24,12 +27,12 @@ class Player : private NonCopyable, private NonMovable {
 
     glm::mat4 GetViewMatrix() const { return m_Camera.GetViewMatrix(); }
 
-  private:
+private:
     float MoveX(float dist, World &world);
     float MoveY(float dist, World &world);
     float MoveZ(float dist, World &world);
 
-  private:
+private:
     glm::vec3 m_Position{};
     glm::vec3 m_Velocity{};
 
