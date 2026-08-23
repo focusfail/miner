@@ -11,6 +11,7 @@
 #include "Util/NonCopyable.hh"
 #include "Util/NonMoveable.hh"
 #include "World/Coordinates.hh"
+#include <array>
 #include <optional>
 
 struct HitResult {
@@ -32,9 +33,11 @@ public:
     void Destroy();
 
     std::optional<HitResult> CastRay(glm::vec3 start, glm::vec3 end);
-    bool IsChunkLoaded(const ChunkPosition &pos);
+    std::array<Chunk *, 6> GetChunkNeighbors(const ChunkPosition &pos);
+    Chunk *TryGetChunkNeighbor(const ChunkPosition &pos, const glm::ivec3 &offset);
+    Chunk *TryGetChunkByWorldPos(const glm::vec3 &pos);
     Chunk *TryGetChunk(const ChunkPosition &pos);
-    Chunk *TryGetChunk(glm::vec3 pos);
+    bool IsChunkLoaded(const ChunkPosition &pos);
     bool IsBlockSolidAt(const glm::vec3 &pos);
     void PropagateLight(const ChunkPosition &chunkPos);
 

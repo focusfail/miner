@@ -87,7 +87,7 @@ std::array<bool, 6> GetShouldCull(const Chunk &chunk, BlockRegistry &reg, const 
     return shouldCull;
 }
 
-ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, BlockRegistry &reg, Chunk *nbChunks[6]) {
+ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, BlockRegistry &reg, std::array<Chunk *, 6> &nbChunks) {
     static const glm::vec3 offsets[6] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
 
     ChunkMeshData mesh;

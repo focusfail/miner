@@ -9,8 +9,7 @@
 
 class BlockRegistry : private NonCopyable, private NonMovable {
 public:
-    void Register(const std::string &name, bool solid, bool transparent,
-                  int texId);
+    void Register(const std::string &name, bool solid, bool transparent, int texId);
 
     const std::string &GetName(BlockID id);
     bool IsSolid(BlockID id);
@@ -21,5 +20,5 @@ public:
 
 private:
     std::unordered_map<std::string, size_t> m_NameToIdx;
-    std::vector<BlockDefinition> m_Defs;
+    std::vector<BlockInfo> m_Defs;
 };

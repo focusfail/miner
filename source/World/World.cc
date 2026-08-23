@@ -4,6 +4,7 @@
 #include "World/Coordinates.hh"
 #include "glm/geometric.hpp"
 #include "spdlog/spdlog.h"
+#include <array>
 #include <queue>
 
 struct LightNode {
@@ -39,14 +40,7 @@ void World::Init() {
 void World::Update() {
     auto dirty = m_ChunkManager.GetDirtyChunks();
     for (const auto &pos : dirty) {
-        Chunk *nbs[6] = {
-            TryGetChunk(pos + glm::ivec3{1, 0, 0}),
-            TryGetChunk(pos + glm::ivec3{-1, 0, 0}),
-            TryGetChunk(pos + glm::ivec3{0, 1, 0}),
-            TryGetChunk(pos + glm::ivec3{0, -1, 0}),
-            TryGetChunk(pos + glm::ivec3{0, 0, 1}),
-            TryGetChunk(pos + glm::ivec3{0, 0, -1}),
-        };
+        auto nbs = GetChunkNeighbors(pos);
 
         Chunk &chunk = m_ChunkManager.GetChunkByPosition(pos);
         PropagateLight(pos);
@@ -69,7 +63,7 @@ Chunk *World::TryGetChunk(const ChunkPosition &pos) {
 
     return &m_ChunkManager.GetChunkByPosition(pos);
 }
-Chunk *World::TryGetChunk(glm::vec3 pos) {
+Chunk *World::TryGetChunkByWorldPos(const glm::vec3 &pos) {
     auto chunkPos = WorldPos2ChunkPos(pos);
     if (!m_ChunkManager.HasChunk(chunkPos)) return nullptr;
 
@@ -170,6 +164,21 @@ auto World::IsBlockSolidAt(const glm::vec3 &worldPos) -> bool {
 
     Block block = chunk->GetBlock(blockPos);
     return m_BlockRegistry.IsSolid(block.id);
+}
+
+std::array<Chunk *, 6> World::GetChunkNeighbors(const ChunkPosition &pos) {
+    return {
+        TryGetChunkNeighbor(pos, glm::ivec3{1, 0, 0}),  //
+        TryGetChunkNeighbor(pos, glm::ivec3{-1, 0, 0}), //
+        TryGetChunkNeighbor(pos, glm::ivec3{0, 1, 0}),  //
+        TryGetChunkNeighbor(pos, glm::ivec3{0, -1, 0}), //
+        TryGetChunkNeighbor(pos, glm::ivec3{0, 0, 1}),  //
+        TryGetChunkNeighbor(pos, glm::ivec3{0, 0, -1})  //
+    };
+}
+
+Chunk *World::TryGetChunkNeighbor(const ChunkPosition &pos, const glm::ivec3 &offset) {
+    return TryGetChunk(pos + offset);
 }
 
 void World::PropagateLight(const ChunkPosition &chunkPos) {

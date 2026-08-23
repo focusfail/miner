@@ -9,5 +9,5 @@ public:
     ChunkMesher() = default;
     ~ChunkMesher() = default;
 
-    ChunkMeshData GenerateMesh(const Chunk &chunk, BlockRegistry &reg, Chunk *nbChunks[6]);
+    ChunkMeshData GenerateMesh(const Chunk &chunk, BlockRegistry &reg, std::array<Chunk *, 6> &nbChunks);
 };

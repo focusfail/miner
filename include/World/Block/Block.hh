@@ -5,7 +5,7 @@
 
 using BlockID = uint16_t;
 
-struct BlockDefinition {
+struct BlockInfo {
     BlockID id;
 
     int texId;
