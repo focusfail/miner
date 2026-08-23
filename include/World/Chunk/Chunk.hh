@@ -7,16 +7,16 @@
 #include <cstdint>
 #include <memory>
 
-using ChunkBlockArray = std::unique_ptr<std::array<Block, Chunk::Volume>>;
+using ChunkBlockArray = std::unique_ptr<std::array<Block, ChunkDim::Volume>>;
 
-struct ChunkInfo {
+struct Chunk {
     bool isDirty = false;
     bool isUniform = true;
     BlockID uniformType{};
     ChunkPosition position{};
     ChunkBlockArray blocks{};
 
-    ChunkInfo(const ChunkPosition &pos, BlockID uniformType);
+    Chunk(const ChunkPosition &pos, BlockID uniformType);
 
     Block GetBlock(const BlockPosition &pos) const;
     Block GetBlock(BlockIndex idx) const;
@@ -24,6 +24,8 @@ struct ChunkInfo {
     void SetBlockBreakStage(const BlockPosition &pos, uint8_t stage);
     uint8_t GetBlockBreakStage(const BlockPosition &pos);
     void SetBlock(const BlockPosition &pos, BlockID block);
+    void SetBlock(const BlockPosition &pos, Block block);
+    void SetBlock(BlockIndex idx, Block block);
 
     void FillUniform(BlockID type);
     void EnsureMutable();

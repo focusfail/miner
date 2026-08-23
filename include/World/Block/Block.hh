@@ -17,11 +17,12 @@ struct BlockDefinition {
 };
 
 struct Block {
+    BlockID id = 0;
     struct {
         uint8_t breakStage : 4 = 0;
-        uint8_t dummy : 4 = 0;
+        uint8_t lightEmit : 4 = 0;
+        uint8_t lightLv : 4 = 1;
     };
-    BlockID id = 0;
 };
 
 auto BlockFromID(BlockID id) -> Block;

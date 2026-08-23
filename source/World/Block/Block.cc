@@ -1,2 +1,2 @@
 #include "World/Block/Block.hh"
-Block BlockFromID(BlockID id) { return {{0, 0}, id}; }
+Block BlockFromID(BlockID id) { return {id, {0, 0}}; }

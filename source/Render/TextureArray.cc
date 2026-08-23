@@ -45,6 +45,17 @@ int TextureArray::AddTexture(const std::string &name) {
                         GL_RGBA, GL_UNSIGNED_BYTE, data);
     stbi_image_free(data);
 
+    m_NameToIdx[name] = m_NumLayers;
+
     spdlog::info("[TextureArray] Added texture ({}): {}", m_NumLayers, name);
     return m_NumLayers++;
+}
+
+int TextureArray::GetLayerByName(const std::string& name) const {
+    auto it = m_NameToIdx.find(name);
+    if (it != m_NameToIdx.end()) {
+        return it->second;
+    }
+
+    return -1;
 }

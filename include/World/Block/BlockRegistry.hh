@@ -3,10 +3,12 @@
 #include "Util/NonCopyable.hh"
 #include "Util/NonMoveable.hh"
 #include "World/Block/Block.hh"
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 class BlockRegistry : private NonCopyable, private NonMovable {
-  public:
+public:
     void Register(const std::string &name, bool solid, bool transparent,
                   int texId);
 
@@ -14,7 +16,10 @@ class BlockRegistry : private NonCopyable, private NonMovable {
     bool IsSolid(BlockID id);
     bool IsTransparent(BlockID id);
     int GetTexture(BlockID id);
+    Block MakeBlock(BlockID id) const;
+    BlockID GetBlockIDByName(const std::string &name);
 
-  private:
+private:
+    std::unordered_map<std::string, size_t> m_NameToIdx;
     std::vector<BlockDefinition> m_Defs;
 };

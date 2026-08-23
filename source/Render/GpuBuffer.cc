@@ -1,4 +1,5 @@
 #include "Render/GpuBuffer.hh"
+#include "spdlog/spdlog.h"
 
 #include <cassert>
 #include <glad/gl.h>

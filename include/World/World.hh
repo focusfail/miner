@@ -14,7 +14,7 @@
 #include <optional>
 
 struct HitResult {
-    ChunkPosition chunkPosition;
+    ChunkPosition chunkPos;
     BlockPosition blockPosition;
     Block block;
     glm::vec3 position;
@@ -33,9 +33,10 @@ public:
 
     std::optional<HitResult> CastRay(glm::vec3 start, glm::vec3 end);
     bool IsChunkLoaded(const ChunkPosition &pos);
-    ChunkInfo *TryGetChunkDataByPosition(const ChunkPosition &pos);
-    ChunkInfo *TryGetChunkDataByWorldPosition(glm::vec3 pos);
+    Chunk *TryGetChunk(const ChunkPosition &pos);
+    Chunk *TryGetChunk(glm::vec3 pos);
     bool IsBlockSolidAt(const glm::vec3 &pos);
+    void PropagateLight(const ChunkPosition &chunkPos);
 
     BlockRegistry &GetBlockRegistry() { return m_BlockRegistry; }
 

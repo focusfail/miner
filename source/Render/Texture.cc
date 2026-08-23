@@ -1,7 +1,7 @@
 #include "Render/Texture.hh"
 #include "spdlog/spdlog.h"
 #include <glad/gl.h>
-#define STB_IMAGE_IMPLEMENTATION
+// #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 void Texture::Load(std::vector<uint8_t> buffer) {

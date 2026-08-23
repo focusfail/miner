@@ -5,58 +5,62 @@
 
 static const std::array<ChunkMeshVertex, 36> blockVertices = {{
     // Front (+Z)
-    {{0, 0, 1}, Face::Front}, // Bottom-Left
-    {{1, 0, 1}, Face::Front}, // Bottom-Right
-    {{1, 1, 1}, Face::Front}, // Top-Right
-    {{1, 1, 1}, Face::Front}, // Top-Right
-    {{0, 1, 1}, Face::Front}, // Top-Left
-    {{0, 0, 1}, Face::Front}, // Bottom-Left
+    {{0, 0, 1}}, // Bottom-Left
+    {{1, 0, 1}}, // Bottom-Right
+    {{1, 1, 1}}, // Top-Right
+    {{1, 1, 1}}, // Top-Right
+    {{0, 1, 1}}, // Top-Left
+    {{0, 0, 1}}, // Bottom-Left
 
     // Back (-Z)
-    {{1, 0, 0}, Face::Back}, // Bottom-Left
-    {{0, 0, 0}, Face::Back}, // Bottom-Right
-    {{0, 1, 0}, Face::Back}, // Top-Right
-    {{0, 1, 0}, Face::Back}, // Top-Right
-    {{1, 1, 0}, Face::Back}, // Top-Left
-    {{1, 0, 0}, Face::Back}, // Bottom-Left
+    {{1, 0, 0}}, // Bottom-Left
+    {{0, 0, 0}}, // Bottom-Right
+    {{0, 1, 0}}, // Top-Right
+    {{0, 1, 0}}, // Top-Right
+    {{1, 1, 0}}, // Top-Left
+    {{1, 0, 0}}, // Bottom-Left
 
     // Top (+Y)
-    {{0, 1, 1}, Face::Top}, // Bottom-Left  (Front-Left)
-    {{1, 1, 1}, Face::Top}, // Bottom-Right (Front-Right)
-    {{1, 1, 0}, Face::Top}, // Top-Right    (Back-Right)
-    {{1, 1, 0}, Face::Top}, // Top-Right    (Back-Right)
-    {{0, 1, 0}, Face::Top}, // Top-Left     (Back-Left)
-    {{0, 1, 1}, Face::Top}, // Bottom-Left  (Front-Left)
+    {{0, 1, 1}}, // Bottom-Left  (Front-Left)
+    {{1, 1, 1}}, // Bottom-Right (Front-Right)
+    {{1, 1, 0}}, // Top-Right    (Back-Right)
+    {{1, 1, 0}}, // Top-Right    (Back-Right)
+    {{0, 1, 0}}, // Top-Left     (Back-Left)
+    {{0, 1, 1}}, // Bottom-Left  (Front-Left)
 
     // Bottom (-Y)
-    {{0, 0, 0}, Face::Bottom}, // Bottom-Left  (Back-Left)
-    {{1, 0, 0}, Face::Bottom}, // Bottom-Right (Back-Right)
-    {{1, 0, 1}, Face::Bottom}, // Top-Right    (Front-Right)
-    {{1, 0, 1}, Face::Bottom}, // Top-Right    (Front-Right)
-    {{0, 0, 1}, Face::Bottom}, // Top-Left     (Front-Left)
-    {{0, 0, 0}, Face::Bottom}, // Bottom-Left  (Back-Left)
+    {{0, 0, 0}}, // Bottom-Left  (Back-Left)
+    {{1, 0, 0}}, // Bottom-Right (Back-Right)
+    {{1, 0, 1}}, // Top-Right    (Front-Right)
+    {{1, 0, 1}}, // Top-Right    (Front-Right)
+    {{0, 0, 1}}, // Top-Left     (Front-Left)
+    {{0, 0, 0}}, // Bottom-Left  (Back-Left)
 
     // Left (-X)
-    {{0, 0, 0}, Face::Left}, // Bottom-Left  (Back-Bottom)
-    {{0, 0, 1}, Face::Left}, // Bottom-Right (Front-Bottom)
-    {{0, 1, 1}, Face::Left}, // Top-Right    (Front-Top)
-    {{0, 1, 1}, Face::Left}, // Top-Right    (Front-Top)
-    {{0, 1, 0}, Face::Left}, // Top-Left     (Back-Top)
-    {{0, 0, 0}, Face::Left}, // Bottom-Left  (Back-Bottom)
+    {{0, 0, 0}}, // Bottom-Left  (Back-Bottom)
+    {{0, 0, 1}}, // Bottom-Right (Front-Bottom)
+    {{0, 1, 1}}, // Top-Right    (Front-Top)
+    {{0, 1, 1}}, // Top-Right    (Front-Top)
+    {{0, 1, 0}}, // Top-Left     (Back-Top)
+    {{0, 0, 0}}, // Bottom-Left  (Back-Bottom)
 
     // Right (+X)
-    {{1, 0, 1}, Face::Right}, // Bottom-Left  (Front-Bottom)
-    {{1, 0, 0}, Face::Right}, // Bottom-Right (Back-Bottom)
-    {{1, 1, 0}, Face::Right}, // Top-Right    (Back-Top)
-    {{1, 1, 0}, Face::Right}, // Top-Right    (Back-Top)
-    {{1, 1, 1}, Face::Right}, // Top-Left     (Front-Top)
-    {{1, 0, 1}, Face::Right}, // Bottom-Left  (Front-Bottom)
+    {{1, 0, 1}}, // Bottom-Left  (Front-Bottom)
+    {{1, 0, 0}}, // Bottom-Right (Back-Bottom)
+    {{1, 1, 0}}, // Top-Right    (Back-Top)
+    {{1, 1, 0}}, // Top-Right    (Back-Top)
+    {{1, 1, 1}}, // Top-Left     (Front-Top)
+    {{1, 0, 1}}, // Bottom-Left  (Front-Bottom)
 }};
 
-std::array<bool, 6> GetShouldCull(const ChunkInfo &chunk, BlockRegistry &reg,
-                                  const BlockPosition &pos) {
+std::array<bool, 6> GetShouldCull(const Chunk &chunk, BlockRegistry &reg, const BlockPosition &pos) {
     constexpr glm::ivec3 offs[6] = {
-        {0, 0, 1}, {0, 0, -1}, {0, 1, 0}, {0, -1, 0}, {-1, 0, 0}, {1, 0, 0},
+        {0, 0, 1},
+        {0, 0, -1},
+        {0, 1, 0},
+        {0, -1, 0},
+        {-1, 0, 0},
+        {1, 0, 0},
     };
 
     std::array<bool, 6> shouldCull{};
@@ -64,47 +68,45 @@ std::array<bool, 6> GetShouldCull(const ChunkInfo &chunk, BlockRegistry &reg,
     for (int i = 0; i < 6; ++i) {
         const glm::ivec3 neighbor = glm::ivec3(pos) + offs[i];
 
-        if (neighbor.x < 0 || neighbor.x >= Chunk::Size || neighbor.y < 0 ||
-            neighbor.y >= Chunk::Size || neighbor.z < 0 ||
-            neighbor.z >= Chunk::Size) {
+        if (neighbor.x < 0 || neighbor.x >= ChunkDim::Size || neighbor.y < 0 || neighbor.y >= ChunkDim::Size ||
+            neighbor.z < 0 || neighbor.z >= ChunkDim::Size) {
 
             shouldCull[i] = false;
             continue;
         }
 
-        BlockPosition neighborPos(static_cast<uint8_t>(neighbor.x),
-                                  static_cast<uint8_t>(neighbor.y),
-                                  static_cast<uint8_t>(neighbor.z));
+        BlockPosition neighborPos(
+            static_cast<uint8_t>(neighbor.x), static_cast<uint8_t>(neighbor.y), static_cast<uint8_t>(neighbor.z));
 
         BlockIndex idx = neighborPos.Idx();
 
-        Block block = chunk.GetBlock(idx);
+        auto block = chunk.GetBlock(idx);
         shouldCull[i] = !reg.IsTransparent(block.id);
     }
 
     return shouldCull;
 }
 
-ChunkMeshData ChunkMesher::GenerateMesh(const ChunkInfo &chunk,
-                                        BlockRegistry &reg) {
+ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, BlockRegistry &reg, Chunk *nbChunks[6]) {
+    static const glm::vec3 offsets[6] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
 
     ChunkMeshData mesh;
     mesh.position = chunk.position;
+    mesh.chunk.isUniform = chunk.isUniform;
+    mesh.chunk.position = chunk.position;
 
     if (chunk.isUniform && !reg.IsTransparent(chunk.uniformType)) {
 
         mesh.vertices.reserve(blockVertices.size());
 
         for (int face = 0; face != static_cast<int>(Face::Last); face++) {
-            for (int faceVertexIndex = 0; faceVertexIndex < 6;
-                 faceVertexIndex++) {
+            for (int faceVertexIndex = 0; faceVertexIndex < 6; faceVertexIndex++) {
                 int vertexIndex = faceVertexIndex + face * 6;
                 const auto &ogVertex = blockVertices[vertexIndex];
-                glm::vec3 newPos =
-                    ogVertex.position * static_cast<float>(Chunk::Size);
-                mesh.vertices.emplace_back(ChunkMeshVertex{
-                    newPos, ogVertex.face, reg.GetTexture(chunk.uniformType)});
+                glm::vec3 newPos = ogVertex.position * static_cast<float>(ChunkDim::Size);
+                mesh.vertices.emplace_back(ChunkMeshVertex{newPos});
             }
+            mesh.faces.emplace_back(static_cast<uint32_t>(face), reg.GetTexture(chunk.uniformType));
         }
 
         return mesh;
@@ -127,14 +129,24 @@ ChunkMeshData ChunkMesher::GenerateMesh(const ChunkInfo &chunk,
         for (int face = 0; face != static_cast<int>(Face::Last); face++) {
             if (shouldCull[face]) continue;
 
-            for (int faceVertexIndex = 0; faceVertexIndex < 6;
-                 faceVertexIndex++) {
+            auto nbPos =
+                offsets[face] + glm::vec3(pos) + glm::vec3(chunk.position) * static_cast<float>(ChunkDim::Size);
+            auto [nbChunkPos, nbBlockPos] = WorldPos2ChunkAndBlock(nbPos);
+
+            Chunk *nbChunk = (nbChunkPos == chunk.position) ? const_cast<Chunk *>(&chunk) : nbChunks[face];
+
+            if (!nbChunk) continue;
+
+            auto nbBlock = nbChunk->GetBlock(nbBlockPos);
+
+            for (int faceVertexIndex = 0; faceVertexIndex < 6; faceVertexIndex++) {
                 int vertexIndex = faceVertexIndex + face * 6;
                 const auto &ogVertex = blockVertices[vertexIndex];
                 glm::vec3 newPos = ogVertex.position + glm::vec3(pos);
-                mesh.vertices.emplace_back(ChunkMeshVertex{
-                    newPos, ogVertex.face, reg.GetTexture(block.id)});
+                mesh.vertices.emplace_back(
+                    ChunkMeshVertex{.position = newPos, .light = static_cast<float>(nbBlock.lightLv) / 15.0f});
             }
+            mesh.faces.emplace_back(static_cast<uint32_t>(face), reg.GetTexture(block.id));
         }
     }
 

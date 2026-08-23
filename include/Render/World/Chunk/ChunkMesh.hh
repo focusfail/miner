@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Render/GpuPool.hh"
 #include "World/Coordinates.hh"
 
 #include <cstdint>
@@ -7,23 +8,33 @@
 
 struct ChunkMeshVertex {
     glm::vec3 position;
-    Face face;
-    int texId;
+    float light = 1.0f / 15.0f;
+};
+
+struct alignas(8) ChunkMeshFace {
+    uint32_t face;
+    uint32_t texId;
+};
+
+struct ChunkMeshChunk {
+    glm::vec3 position;
+    uint32_t faceOffset;
+    uint32_t baseVertex;
+    uint32_t isUniform;
+    uint32_t padding[2];
 };
 
 struct ChunkMeshData {
     ChunkPosition position;
     std::vector<ChunkMeshVertex> vertices;
+    std::vector<ChunkMeshFace> faces;
+    ChunkMeshChunk chunk;
 };
 
 struct ChunkMesh {
-    uint32_t numVertices = 0;
-    uint32_t vbo = 0;
-    uint32_t vao = 0;
     ChunkPosition position;
-
-    void Upload(const ChunkMeshData &data);
-    void Render();
-
-    void Destroy();
+    GpuPool<ChunkMeshVertex>::Slot vertexSlot;
+    GpuPool<ChunkMeshFace>::Slot faceSlot;
+    GpuPool<ChunkMeshChunk>::Slot chunkSlot;
+    bool active = false;
 };

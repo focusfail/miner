@@ -2,10 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
-ChunkInfo &ChunkManager::CreateChunk(const ChunkPosition &pos,
-                                     uint8_t uniformType) {
-    spdlog::info("[ChunkManager] Created chunk at ({},{},{})", pos.x, pos.y,
-                 pos.z);
+Chunk &ChunkManager::CreateChunk(const ChunkPosition &pos, uint8_t uniformType) {
+    spdlog::info("[ChunkManager] Created chunk at ({},{},{})", pos.x, pos.y, pos.z);
     auto [it, inserted] = m_Chunks.try_emplace(pos, pos, uniformType);
     return it->second;
 }
@@ -20,10 +18,6 @@ std::vector<ChunkPosition> ChunkManager::GetDirtyChunks() {
     return dirty;
 }
 
-ChunkInfo &ChunkManager::GetChunkDataByPosition(const ChunkPosition &pos) {
-    return m_Chunks.at(pos);
-}
+Chunk &ChunkManager::GetChunkByPosition(const ChunkPosition &pos) { return m_Chunks.at(pos); }
 
-bool ChunkManager::HasChunk(const ChunkPosition &pos) const {
-    return m_Chunks.find(pos) != m_Chunks.end();
-}
+bool ChunkManager::HasChunk(const ChunkPosition &pos) const { return m_Chunks.find(pos) != m_Chunks.end(); }
