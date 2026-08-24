@@ -175,12 +175,12 @@ auto World::IsBlockSolidAt(const glm::vec3 &worldPos) -> bool {
 
 std::array<Chunk *, 6> World::GetChunkNeighbors(const ChunkPosition &pos) {
     return {
-        TryGetChunkNeighbor(pos, glm::ivec3{1, 0, 0}),  //
-        TryGetChunkNeighbor(pos, glm::ivec3{-1, 0, 0}), //
-        TryGetChunkNeighbor(pos, glm::ivec3{0, 1, 0}),  //
-        TryGetChunkNeighbor(pos, glm::ivec3{0, -1, 0}), //
-        TryGetChunkNeighbor(pos, glm::ivec3{0, 0, 1}),  //
-        TryGetChunkNeighbor(pos, glm::ivec3{0, 0, -1})  //
+        TryGetChunkNeighbor(pos, glm::ivec3{0, 0, 1}),  // +z front
+        TryGetChunkNeighbor(pos, glm::ivec3{0, 0, -1}), // -z back
+        TryGetChunkNeighbor(pos, glm::ivec3{0, 1, 0}),  // +y top
+        TryGetChunkNeighbor(pos, glm::ivec3{0, -1, 0}), // -y bottom
+        TryGetChunkNeighbor(pos, glm::ivec3{-1, 0, 0}), // -x left
+        TryGetChunkNeighbor(pos, glm::ivec3{1, 0, 0}),  // +x right
     };
 }
 
