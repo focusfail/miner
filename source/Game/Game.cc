@@ -21,6 +21,7 @@ BlockID currentBlock = 1;
 BlockID maxBlock;
 
 void Game::Init() {
+    srand(time(0));
     spdlog::info("[Game] Init");
     m_Window.Init("mine", 1920, 1080);
     m_Window.CaptureMouse(true);
