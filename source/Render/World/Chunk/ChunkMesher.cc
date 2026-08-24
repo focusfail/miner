@@ -149,7 +149,7 @@ ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, std::array<Chunk *, 
                 const auto &ogVertex = blockVertices[vertexIndex];
                 glm::vec3 newPos = ogVertex.position + glm::vec3(pos);
                 mesh.vertices.emplace_back(
-                    ChunkMeshVertex{.position = newPos, .light = static_cast<float>(nbBlock.lightLv) / 15.0f});
+                    ChunkMeshVertex{.position = newPos, .light = static_cast<float>(lightLv) / 15.0f});
             }
             mesh.faces.emplace_back(
                 static_cast<uint32_t>(face), br.GetTexture(block.id), static_cast<uint32_t>(block.breakStage));
