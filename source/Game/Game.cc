@@ -164,7 +164,9 @@ void Game::Mainloop() {
         float dt = m_Window.GetDeltaTime();
         auto &camera = m_Player.GetCamera();
         m_Player.Update(dt, m_World, input);
-        camera.ProcessMouse(input.GetMouseDelta());
+        if (m_Window.IsMouseCaptured()) {
+            camera.ProcessMouse(input.GetMouseDelta());
+        }
 
         m_World.Update();
         m_World.Render(camera);
