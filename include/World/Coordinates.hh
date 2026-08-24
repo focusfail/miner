@@ -110,3 +110,12 @@ enum class Face : uint8_t {
     Right,     // +x { 1,  0,  0}
     Last,
 };
+
+constexpr glm::vec3 FaceOffsets[] = {
+    {0, 0, 1},
+    {0, 0, -1},
+    {0, 1, 0},
+    {0, -1, 0},
+    {-1, 0, 0},
+    {1, 0, 0},
+};
