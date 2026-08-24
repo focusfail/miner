@@ -137,9 +137,12 @@ ChunkMeshData ChunkMesher::GenerateMesh(const Chunk &chunk, std::array<Chunk *, 
 
             Chunk *nbChunk = (nbChunkPos == chunk.position) ? const_cast<Chunk *>(&chunk) : nbChunks[face];
 
-            if (!nbChunk) continue;
-
-            auto nbBlock = nbChunk->GetBlockRaw(nbBlockPos);
+            Block dflt{};
+            int lightLv = dflt.lightLv;
+            if (nbChunk) {
+                auto nbBlock = nbChunk->GetBlockRaw(nbBlockPos);
+                lightLv = nbBlock.lightLv;
+            }
 
             for (int faceVertexIndex = 0; faceVertexIndex < 6; faceVertexIndex++) {
                 int vertexIndex = faceVertexIndex + face * 6;
