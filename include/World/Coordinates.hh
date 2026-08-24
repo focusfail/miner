@@ -102,11 +102,11 @@ constexpr bool AABBIntersects(
 }
 
 enum class Face : uint8_t {
-    Front = 0, // +z
-    Back,      // -z
-    Top,       // +y
-    Bottom,    // -y
-    Left,      // -x
-    Right,     // +x
+    Front = 0, // +z { 0,  0,  1}
+    Back,      // -z { 0,  0, -1}
+    Top,       // +y { 0,  1,  0}
+    Bottom,    // -y { 0, -1,  0}
+    Left,      // -x {-1,  0,  0}
+    Right,     // +x { 1,  0,  0}
     Last,
 };
