@@ -216,8 +216,6 @@ void World::PropagateLight(const ChunkPosition &chunkPos) {
         lightQueue.push({blockIdx, chunk});
     }
 
-    static const glm::vec3 offsets[6] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
-
     while (!lightQueue.empty()) {
         LightNode node = lightQueue.front();
         lightQueue.pop();
@@ -234,7 +232,7 @@ void World::PropagateLight(const ChunkPosition &chunkPos) {
             continue;
         }
 
-        for (const auto &off : offsets) {
+        for (const auto &off : FaceOffsets) {
             auto wp = off + glm::vec3(*pos) + (glm::vec3(chunkPos) * static_cast<float>(CHUNK_SIZE));
 
             auto [nbPos, blockPos] = WorldPos2ChunkAndBlock(wp);
