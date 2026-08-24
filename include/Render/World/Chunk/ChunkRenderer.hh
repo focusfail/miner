@@ -34,6 +34,7 @@ public:
     }
 
 private:
+    bool m_IsDirty = true; // whether or not to rebuild cmd buffer
     ShaderProgram *m_Program;
     TextureArray *m_Texture;
     TextureArray *m_Overlays;

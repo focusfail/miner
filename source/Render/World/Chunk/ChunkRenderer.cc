@@ -18,6 +18,7 @@ void ChunkRenderer::Init() {
     m_CmdBuffer.Init();
     m_CmdBuffer.Allocate(sizeof(DrawCmd) * 32);
 }
+
 void ChunkRenderer::UploadMesh(const ChunkMeshData &mesh) {
     if (mesh.vertices.empty()) {
         spdlog::info("[ChunkRenderer] Tried to render empty mesh");
@@ -53,6 +54,8 @@ void ChunkRenderer::UploadMesh(const ChunkMeshData &mesh) {
 
         m_ChunkPool.Upload(chunkMesh.chunkSlot, c);
     }
+
+    m_IsDirty = true;
 }
 
 void ChunkRenderer::RemoveMesh(const ChunkPosition &pos) {
@@ -61,19 +64,23 @@ void ChunkRenderer::RemoveMesh(const ChunkPosition &pos) {
         return;
     }
     m_Meshes.erase(it);
+    m_IsDirty = true;
 }
 
 void ChunkRenderer::Render(const Camera &cam) {
-    m_DrawCmds.clear();
-    for (const auto &[pos, mesh] : m_Meshes) {
-        if (!mesh.active) continue;
+    if (m_IsDirty) {
+        m_DrawCmds.clear();
+        for (const auto &[pos, mesh] : m_Meshes) {
+            if (!mesh.active) continue;
 
-        m_DrawCmds.push_back({
-            .count = static_cast<uint32_t>(mesh.vertexSlot.size / sizeof(ChunkMeshVertex)),
-            .instanceCount = 1,
-            .firstIndex = static_cast<uint32_t>(mesh.vertexSlot.offset / sizeof(ChunkMeshVertex)),
-            .baseInstance = static_cast<uint32_t>(mesh.chunkSlot.offset / sizeof(ChunkMeshChunk)),
-        });
+            m_DrawCmds.push_back({
+                .count = static_cast<uint32_t>(mesh.vertexSlot.size / sizeof(ChunkMeshVertex)),
+                .instanceCount = 1,
+                .firstIndex = static_cast<uint32_t>(mesh.vertexSlot.offset / sizeof(ChunkMeshVertex)),
+                .baseInstance = static_cast<uint32_t>(mesh.chunkSlot.offset / sizeof(ChunkMeshChunk)),
+            });
+        }
+        m_CmdBuffer.Upload(0, m_DrawCmds.size() * sizeof(DrawCmd), m_DrawCmds.data());
     }
 
     glm::mat4 proj = glm::perspective(glm::radians(75.0f), 1920.0f / 1080.0f, 0.1f, 1000.0f);
@@ -90,7 +97,6 @@ void ChunkRenderer::Render(const Camera &cam) {
     m_Program->SetUniform(0, vp);
 
     if (!m_DrawCmds.empty()) {
-        m_CmdBuffer.Upload(0, m_DrawCmds.size() * sizeof(DrawCmd), m_DrawCmds.data());
         glMultiDrawArraysIndirect(
             GL_TRIANGLES, reinterpret_cast<const void *>(0), static_cast<GLsizei>(m_DrawCmds.size()), sizeof(DrawCmd));
     }
