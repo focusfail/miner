@@ -83,8 +83,10 @@ float Window::GetDeltaTime() const { return static_cast<float>(m_NewTime - m_Old
 void Window::CaptureMouse(bool shouldCapture) {
     if (shouldCapture) {
         glfwSetInputMode(m_Glfw, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        m_IsMouseCaptured = true;
     } else {
         glfwSetInputMode(m_Glfw, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        m_IsMouseCaptured = false;
     }
 }
 

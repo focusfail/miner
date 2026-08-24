@@ -29,6 +29,7 @@ public:
 
     void Resize(int w, int h);
     void CaptureMouse(bool shouldCapture);
+    bool IsMouseCaptured() const { return m_IsMouseCaptured; }
 
     Input &GetInput();
     GLFWwindow *GetGlfwWindow() const;
@@ -37,6 +38,7 @@ private:
     static void ResizeFun(GLFWwindow *glfw, int newX, int newY);
 
     bool m_IsResized = false;
+    bool m_IsMouseCaptured = false;
 
     double m_OldTime;
     double m_NewTime;
