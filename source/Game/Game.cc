@@ -214,8 +214,9 @@ void Game::Mainloop() {
                 nvgFillColor(vg, nvgRGB(255, 255, 255));
                 nvgTextAlign(vg, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
                 nvgText(vg, m_Window.GetWidth() - 5, 5,
-                    std::format("{} id: {} lightemit: {} lightlv: {} breakstage: {}", hit.block.name, hit.block.id,
-                        hit.block.lightEmit, hit.block.lightLv, hit.block.breakStage)
+                    std::format("'{}' id: {} lightemit: {} lightlv: {} breakstage: {} n: {},{},{}", hit.block.name,
+                        hit.block.id, hit.block.lightEmit, hit.block.lightLv, hit.block.breakStage, hit.normal.x,
+                        hit.normal.y, hit.normal.z)
                         .c_str(),
                     nullptr);
             }
