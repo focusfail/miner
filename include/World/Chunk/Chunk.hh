@@ -23,12 +23,16 @@ struct Chunk {
 
     BlockInfo GetBlock(const BlockPosition &pos) const;
     BlockInfo GetBlock(BlockIndex idx) const;
+    std::optional<BlockInfo> TryGetBlockNeighbor(const BlockPosition &pos, const glm::ivec3 &offset) const;
+    std::array<std::optional<BlockInfo>, 6> GetBlockNeighbors(const BlockPosition &pos, const glm::ivec3 &offset) const;
 
     void SetBlockBreakStage(const BlockPosition &pos, uint8_t stage);
     uint8_t GetBlockBreakStage(const BlockPosition &pos);
     void SetBlock(const BlockPosition &pos, BlockID block);
     void SetBlock(const BlockPosition &pos, Block block);
     void SetBlock(BlockIndex idx, Block block);
+
+    void Randomize();
 
     void FillUniform(BlockID type);
     void EnsureMutable();
