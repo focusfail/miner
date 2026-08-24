@@ -111,10 +111,13 @@ void Game::Mainloop() {
     Keybind toggleFly{.key = KeyboardKey::SPACE, .trigger = InputTrigger::DOUBLE, .cb = [this]() {
         m_Player.SetFlight(!m_Player.GetFlight());
     }};
+    Keybind toggleMouse{
+        .key = KeyboardKey::TAB, .cb = [this]() { m_Window.CaptureMouse(!m_Window.IsMouseCaptured()); }};
 
     input.RegisterKeybind(toggleWireframe);
     input.RegisterKeybind(toggleDebugDraw);
     input.RegisterKeybind(toggleFly);
+    input.RegisterKeybind(toggleMouse);
     input.RegisterKeybind(mineBlock);
     input.RegisterKeybind(placeTorch);
     input.RegisterKeybind(placeBlock);
