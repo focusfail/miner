@@ -17,17 +17,6 @@ struct LightNode {
 void World::Init() {
     m_ChunkRenderer.Init();
 
-    m_ChunkManager.CreateChunk(ChunkPosition{0, 0, 0}, 0);
-    m_ChunkManager.CreateChunk(ChunkPosition{0, 0, 1}, 1);
-    m_ChunkManager.CreateChunk(ChunkPosition{0, 0, -1}, 1);
-    m_ChunkManager.CreateChunk(ChunkPosition{1, 0, 0}, 1);
-    m_ChunkManager.CreateChunk(ChunkPosition{-1, 0, 0}, 1);
-    m_ChunkManager.CreateChunk(ChunkPosition{0, 1, 0}, 2);
-
-    for (int i = 0; i < 5; i++) {
-        m_ChunkManager.CreateChunk(ChunkPosition{0, -i, 0}, 1);
-    }
-
     m_BlockTextures.Init();
     m_OverlayTextures.Init();
 
