@@ -106,3 +106,33 @@ BlockInfo Chunk::GetBlock(BlockIndex idx) const {
         .name = std::string_view(entry.name)};
 }
 BlockInfo Chunk::GetBlock(const BlockPosition &pos) const { return GetBlock(pos.Idx()); }
+
+std::optional<BlockInfo> Chunk::TryGetBlockNeighbor(const BlockPosition &pos, const glm::ivec3 &offset) const {
+    auto nbPos = BlockPosition(glm::ivec3(pos) + offset);
+    if (!nbPos.IsValid()) return std::nullopt;
+
+    return GetBlock(nbPos);
+}
+
+std::array<std::optional<BlockInfo>, 6> Chunk::GetBlockNeighbors(
+    const BlockPosition &pos, const glm::ivec3 &offset) const {
+    return {
+        TryGetBlockNeighbor(pos, glm::ivec3{1, 0, 0}),  //
+        TryGetBlockNeighbor(pos, glm::ivec3{-1, 0, 0}), //
+        TryGetBlockNeighbor(pos, glm::ivec3{0, 1, 0}),  //
+        TryGetBlockNeighbor(pos, glm::ivec3{0, -1, 0}), //
+        TryGetBlockNeighbor(pos, glm::ivec3{0, 0, 1}),  //
+        TryGetBlockNeighbor(pos, glm::ivec3{0, 0, -1}), //
+    };
+}
+
+void Chunk::Randomize() {
+    EnsureMutable();
+    auto &br = BlockRegistry::GetInstance();
+    int maxBlocks = br.GetBlockCount();
+
+    for (size_t i = 0; i < CHUNK_VOLUME; i++) {
+        BlockID randBlock = static_cast<BlockID>(rand() % maxBlocks);
+        blocks->at(i).id = randBlock;
+    }
+}
